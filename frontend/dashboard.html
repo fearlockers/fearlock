@@ -6,6 +6,36 @@
     <title>脆弱性診断ツール - ダッシュボード</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- デバッグモード用のスタイル -->
+    <style>
+        .debug-log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+            border-bottom: 1px solid #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .debug-log-entry.error {
+            color: #ff4444;
+        }
+        .scan-success-indicator {
+            display: none;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -219,6 +249,11 @@
                             
                             <button type="submit" class="btn btn-primary">プロジェクト作成</button>
                         </form>
+                        
+                        <!-- 成功メッセージ表示エリア -->
+                        <div id="project-success-indicator" class="scan-success-indicator">
+                            <i class="fas fa-check-circle"></i> プロジェクトが正常に作成されました！ダッシュボードに戻ります...
+                        </div>
                     </div>
                 </div>
 
@@ -497,6 +532,171 @@
 
         // ページ読み込み時に初期化
         document.addEventListener('DOMContentLoaded', initDashboard);
+
+        // プロジェクト作成成功時の処理を強化
+        function showProjectCreationSuccess() {
+            const successIndicator = document.getElementById('project-success-indicator');
+            if (successIndicator) {
+                successIndicator.style.display = 'block';
+                
+                // デバッグモードの時はログにも出力
+                if (window.debugTools && window.debugTools.isDebugMode()) {
+                    window.debugTools.log('プロジェクト作成が成功しました');
+                }
+                
+                // 3秒後にダッシュボードに戻る
+                setTimeout(() => {
+                    successIndicator.style.display = 'none';
+                    document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
+                }, 3000);
+            }
+        }
+        
+        // プロジェクト作成前の処理を強化
+        function validateNewProjectForm() {
+            const projectNameInput = document.getElementById('project-name');
+            const targetUrlInput = document.getElementById('target-url');
+            
+            // 入力値の検証
+            if (!projectNameInput.value.trim()) {
+                alert('プロジェクト名を入力してください');
+                projectNameInput.focus();
+                return false;
+            }
+            
+            if (!targetUrlInput.value.trim()) {
+                alert('対象URLを入力してください');
+                targetUrlInput.focus();
+                return false;
+            }
+            
+            // URLの検証
+            try {
+                new URL(targetUrlInput.value);
+            } catch (e) {
+                alert('有効なURLを入力してください (例: https://example.com)');
+                targetUrlInput.focus();
+                return false;
+            }
+            
+            // デバッグモードの時は検証OKのログを出力
+            if (window.debugTools && window.debugTools.isDebugMode()) {
+                window.debugTools.log('フォーム検証成功', {
+                    projectName: projectNameInput.value,
+                    targetUrl: targetUrlInput.value
+                });
+            }
+            
+            return true;
+        }
+        
+        // 拡張イベントリスナー
+        document.addEventListener('DOMContentLoaded', function() {
+            // 新規プロジェクトフォームの拡張
+            const newScanForm = document.getElementById('new-scan-form');
+            if (newScanForm) {
+                newScanForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    
+                    // フォーム検証
+                    if (!validateNewProjectForm()) {
+                        return;
+                    }
+                    
+                    // プロジェクト名とターゲットURLを取得
+                    const projectName = document.getElementById('project-name').value;
+                    const targetUrl = document.getElementById('target-url').value;
+                    
+                    // スキャンタイプの取得
+                    const scanType = document.querySelector('.scan-type-option.selected').getAttribute('data-type');
+                    
+                    // スキャンオプションの取得
+                    const scanOptions = [];
+                    document.querySelectorAll('.scan-option-card.selected').forEach(option => {
+                        scanOptions.push(option.getAttribute('data-option'));
+                    });
+                    
+                    // デバッグ情報
+                    if (window.debugTools && window.debugTools.isDebugMode()) {
+                        window.debugTools.log('プロジェクト作成開始', {
+                            name: projectName,
+                            url: targetUrl,
+                            type: scanType,
+                            options: scanOptions
+                        });
+                    }
+                    
+                    // プロジェクト作成ボタンを無効化
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 作成中...';
+                    
+                    try {
+                        // ユーザーセッションを確認
+                        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+                        
+                        if (sessionError) {
+                            throw new Error('セッション取得エラー: ' + sessionError.message);
+                        }
+                        
+                        if (!sessionData.session) {
+                            throw new Error('有効なセッションがありません。再ログインしてください。');
+                        }
+                        
+                        const userId = sessionData.session.user.id;
+                        
+                        // デバッグ情報
+                        if (window.debugTools && window.debugTools.isDebugMode()) {
+                            window.debugTools.log('ユーザーID取得成功', userId);
+                        }
+                        
+                        // 新規プロジェクトデータ
+                        const projectData = {
+                            user_id: userId,
+                            name: projectName,
+                            target_url: targetUrl,
+                            scan_type: scanType,
+                            scan_options: scanOptions,
+                            status: 'pending',
+                            progress: 0,
+                            created_at: new Date().toISOString()
+                        };
+                        
+                        // デバッグモードの場合はデータを表示
+                        if (window.debugTools && window.debugTools.isDebugMode()) {
+                            window.debugTools.logDb('insert', 'projects', projectData);
+                        }
+                        
+                        // データベースにプロジェクトを作成
+                        const { data, error } = await supabase
+                            .from('projects')
+                            .insert([projectData])
+                            .select();
+                        
+                        if (error) {
+                            throw new Error('プロジェクト作成エラー: ' + error.message);
+                        }
+                        
+                        // 成功処理
+                        console.log('プロジェクトが正常に作成されました:', data);
+                        
+                        // フォームをリセット
+                        this.reset();
+                        
+                        // 成功表示
+                        showProjectCreationSuccess();
+                        
+                    } catch (error) {
+                        console.error('プロジェクト作成中にエラーが発生しました:', error);
+                        alert(error.message || 'プロジェクト作成に失敗しました。もう一度お試しください。');
+                    } finally {
+                        // ボタンを再度有効化
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = 'プロジェクト作成';
+                    }
+                });
+            }
+        });
     </script>
     <script src="js/dashboard.js"></script>
 </body>

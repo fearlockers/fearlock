@@ -56,32 +56,63 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('ダッシュボードの初期化を開始します...');
     
-    // ユーザーセッションの取得
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-        console.error('セッション取得エラー:', error);
-        window.location.href = 'login.html';
-        return;
+    try {
+        // ユーザーセッションの取得
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+            console.error('セッション取得エラー:', error);
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (!data.session) {
+            console.warn('有効なセッションがありません。ログインページにリダイレクトします。');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        currentUser = data.session.user;
+        console.log('現在のユーザー:', currentUser);
+        
+        // データベーステーブルの存在確認
+        await checkAndCreateProjectsTable();
+        
+        // ダッシュボードの初期化
+        initializeDashboard();
+        
+        // プロジェクト一覧の読み込み
+        loadUserProjects();
+        
+        // イベントリスナーの設定
+        setupEventListeners();
+    } catch (err) {
+        console.error('ダッシュボード初期化中にエラーが発生しました:', err);
+        alert('ダッシュボードの読み込み中にエラーが発生しました。ページをリロードしてください。');
     }
-    
-    if (!data.session) {
-        console.warn('有効なセッションがありません。ログインページにリダイレクトします。');
-        window.location.href = 'login.html';
-        return;
-    }
-    
-    currentUser = data.session.user;
-    console.log('現在のユーザー:', currentUser);
-    
-    // ダッシュボードの初期化
-    initializeDashboard();
-    
-    // プロジェクト一覧の読み込み
-    loadUserProjects();
-    
-    // イベントリスナーの設定
-    setupEventListeners();
 });
+
+// データベースのプロジェクトテーブルが存在するか確認し、必要に応じて作成
+async function checkAndCreateProjectsTable() {
+    try {
+        console.log('データベースの確認を行っています...');
+        
+        // Supabaseスキーマ情報を取得
+        const { error: schemaError } = await supabase
+            .from('projects')
+            .select('id')
+            .limit(1);
+        
+        if (schemaError) {
+            console.warn('プロジェクトテーブルが存在しないか、アクセスできません:', schemaError);
+            console.log('テーブルの自動作成はSupabaseのRlSポリシー制限により実行できません。');
+            console.log('Supabaseダッシュボードでテーブルが正しく設定されていることを確認してください。');
+        } else {
+            console.log('プロジェクトテーブルが正常に確認できました');
+        }
+    } catch (err) {
+        console.error('データベース確認中にエラーが発生しました:', err);
+    }
+}
 
 // ダッシュボードの初期化
 function initializeDashboard() {
@@ -242,11 +273,20 @@ function toggleScanOption() {
 async function handleNewProjectSubmit(event) {
     event.preventDefault();
     
+    // 入力検証
     const projectNameInput = document.getElementById('project-name');
     const targetUrlInput = document.getElementById('target-url');
     
     if (!projectNameInput.value || !targetUrlInput.value) {
         alert('プロジェクト名とターゲットURLを入力してください。');
+        return;
+    }
+    
+    // ユーザーセッション確認
+    if (!currentUser) {
+        console.error('現在のユーザー情報がありません');
+        alert('セッションが無効です。再ログインしてください。');
+        window.location.href = 'login.html';
         return;
     }
     
@@ -266,37 +306,47 @@ async function handleNewProjectSubmit(event) {
     submitButton.disabled = true;
     submitButton.textContent = '作成中...';
     
+    // 作成する新規プロジェクトデータ
+    const newProject = {
+        user_id: currentUser.id,
+        name: projectName,
+        target_url: targetUrl,
+        scan_type: scanType,
+        scan_options: scanOptions,
+        status: 'pending',
+        progress: 0,
+        created_at: new Date().toISOString()
+    };
+    
+    console.log('新規プロジェクト作成:', newProject);
+    
     try {
         // データベースにプロジェクトを作成
         const { data, error } = await supabase
             .from('projects')
-            .insert([{
-                user_id: currentUser.id,
-                name: projectName,
-                target_url: targetUrl,
-                scan_type: scanType,
-                scan_options: scanOptions,
-                status: 'pending'
-            }])
+            .insert([newProject])
             .select();
         
-        if (error) throw error;
+        if (error) {
+            console.error('プロジェクト作成エラー詳細:', error);
+            throw new Error(`プロジェクト作成に失敗しました: ${error.message || '不明なエラー'}`);
+        }
         
-        console.log('プロジェクトが作成されました:', data);
+        console.log('プロジェクトが正常に作成されました:', data);
         
         // フォームをリセット
         event.target.reset();
         
         // プロジェクト一覧を更新
-        loadUserProjects();
+        await loadUserProjects();
         
         // ダッシュボードタブに切り替え
         document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
         
-        alert('プロジェクトが正常に作成されました');
+        alert('プロジェクトが正常に作成されました！');
     } catch (error) {
         console.error('プロジェクト作成エラー:', error);
-        alert('プロジェクトの作成中にエラーが発生しました。');
+        alert(error.message || 'プロジェクトの作成中にエラーが発生しました。もう一度お試しください。');
     } finally {
         // ボタンを再度有効化
         submitButton.disabled = false;
@@ -306,12 +356,20 @@ async function handleNewProjectSubmit(event) {
 
 // ユーザーのプロジェクト一覧を読み込む
 async function loadUserProjects() {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.warn('ユーザー情報がないためプロジェクト一覧を読み込めません');
+        return;
+    }
     
     const ongoingContainer = document.getElementById('ongoingProjectsContainer');
-    if (!ongoingContainer) return;
+    if (!ongoingContainer) {
+        console.warn('プロジェクト表示用コンテナが見つかりません');
+        return;
+    }
     
     try {
+        console.log(`ユーザーID: ${currentUser.id} のプロジェクト一覧を取得中...`);
+        
         // プロジェクト一覧を取得
         const { data, error } = await supabase
             .from('projects')
@@ -319,14 +377,17 @@ async function loadUserProjects() {
             .eq('user_id', currentUser.id)
             .order('created_at', { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+            console.error('プロジェクト一覧取得エラー:', error);
+            throw error;
+        }
         
-        console.log('プロジェクト一覧:', data);
+        console.log(`${data ? data.length : 0}件のプロジェクトを取得しました:`, data);
         
         // コンテナを空にする
         ongoingContainer.innerHTML = '';
         
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             ongoingContainer.innerHTML = '<p class="no-projects">プロジェクトがありません。新規プロジェクトを作成してください。</p>';
             return;
         }
@@ -446,6 +507,7 @@ function getEstimatedTimeRemaining(project) {
 function showProjectDetails(projectId) {
     console.log('プロジェクト詳細を表示:', projectId);
     // プロジェクト詳細表示の実装（今後追加）
+    alert('プロジェクト詳細機能は開発中です（プロジェクトID: ' + projectId + '）');
 }
 
 // プロジェクトをキャンセル
@@ -457,15 +519,18 @@ async function cancelProject(projectId) {
     try {
         const { error } = await supabase
             .from('projects')
-            .update({ status: 'cancelled' })
+            .update({ status: 'cancelled', updated_at: new Date().toISOString() })
             .eq('id', projectId);
         
-        if (error) throw error;
+        if (error) {
+            console.error('プロジェクトキャンセルエラー:', error);
+            throw error;
+        }
         
         console.log('プロジェクトがキャンセルされました:', projectId);
         
         // プロジェクト一覧を更新
-        loadUserProjects();
+        await loadUserProjects();
     } catch (error) {
         console.error('プロジェクトキャンセルエラー:', error);
         alert('プロジェクトのキャンセル中にエラーが発生しました。');
