@@ -25,7 +25,7 @@ async function checkSession() {
 // ページの初期化
 async function initPage() {
     try {
-        const currentPage = window.location.pathname.split('/').pop();
+        const currentPage = window.location.pathname.split('/').pop() || 'login.html';
         console.log('現在のページ:', currentPage);
         
         const session = await checkSession();
@@ -38,14 +38,7 @@ async function initPage() {
             return;
         }
 
-        // ログイン状態でログインページや登録ページにアクセスした場合はダッシュボードへリダイレクト
-        if ((currentPage === 'login.html' || currentPage === 'signup.html') && session) {
-            console.log('ログイン済みですが、ログインページへのアクセスを許可します');
-            // ダッシュボードへの自動リダイレクトを削除
-            return;
-        }
-
-        // ダッシュボードページの場合はユーザー情報を表示
+        // ダッシュボードページでセッションがある場合はユーザー情報を表示
         if (currentPage === 'dashboard.html' && session) {
             console.log('ダッシュボードにユーザー情報を表示');
             displayUserInfo(session.user);
@@ -183,7 +176,11 @@ if (loginForm) {
             }
             
             console.log('ログイン成功:', data);
-            window.location.href = 'dashboard.html';
+            // 遷移処理を強化
+            console.log('ダッシュボードページに遷移します');
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 100);
             
         } catch (error) {
             console.error('ログイン中にエラーが発生しました:', error);

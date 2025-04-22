@@ -122,7 +122,7 @@ if (signupForm) {
                 } else {
                     console.log('データベースに保存されました');
                     alert('新規登録成功');
-                    window.location.href = './'; // 新規登録後にログイン画面にリダイレクト
+                    window.location.href = 'login.html'; // 新規登録後にログイン画面にリダイレクト
                 }
             } catch (e) {
                 console.error('データベース処理中にエラーが発生しました:', e);
