@@ -47,6 +47,9 @@ if (loginForm) {
             alert('ログインに失敗しました: ' + error.message);
         } else {
             console.log('ログイン成功:', data);
+            // ログイン状態をローカルストレージに保存
+            localStorage.setItem('isLoggedIn', 'true');
+            console.log('ログイン状態をローカルストレージに保存しました');
             window.location.href = 'dashboard.html';
         }
     } catch (e) {
