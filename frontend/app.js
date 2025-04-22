@@ -47,7 +47,6 @@ if (loginForm) {
             alert('ログインに失敗しました: ' + error.message);
         } else {
             console.log('ログイン成功:', data);
-            alert('ログイン成功');
             window.location.href = 'dashboard.html';
         }
     } catch (e) {

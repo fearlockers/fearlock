@@ -4,28 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログイン</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="auth-form">
-            <h1>ログイン</h1>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="email">メールアドレス</label>
-                    <input type="email" id="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">パスワード</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="btn">ログイン</button>
-            </form>
-            <p class="auth-link">アカウントをお持ちでない方は <a href="signup.html">新規登録</a></p>
-        </div>
+    <div class="login-container">
+        <h2>ログイン</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="メールアドレス" required>
+            <input type="password" id="password" placeholder="パスワード" required>
+            <button type="submit">ログイン</button>
+        </form>
+        <p>アカウントをお持ちでない方は<a href="signup.html">新規登録</a>してください。</p>
+        <div id="login-status" class="status-message"></div>
     </div>
+    <script>
+        // デバッグ用のステータス表示関数
+        function updateStatus(message, isError = false) {
+            const statusElement = document.getElementById('login-status');
+            statusElement.textContent = message;
+            statusElement.className = 'status-message ' + (isError ? 'error' : 'success');
+            console.log(isError ? 'エラー: ' : 'ステータス: ', message);
+        }
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/auth.js"></script>
+        window.addEventListener('error', function(event) {
+            updateStatus('JavaScriptエラー: ' + event.message, true);
+        });
+    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html> 

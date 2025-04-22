@@ -40,8 +40,8 @@ async function initPage() {
 
         // ログイン状態でログインページや登録ページにアクセスした場合はダッシュボードへリダイレクト
         if ((currentPage === 'login.html' || currentPage === 'signup.html') && session) {
-            console.log('ログイン済みのため、ダッシュボードへリダイレクト');
-            window.location.href = 'dashboard.html';
+            console.log('ログイン済みですが、ログインページへのアクセスを許可します');
+            // ダッシュボードへの自動リダイレクトを削除
             return;
         }
 
