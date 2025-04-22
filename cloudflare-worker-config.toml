@@ -1,0 +1,14 @@
+name = "fearlock-api"
+main = "backend/worker.js"
+compatibility_date = "2023-10-30"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# 本番環境の変数はCloudflareダッシュボードで設定
+# ここには開発環境用のダミー値を設定
+SUPABASE_URL = "https://example.supabase.co"
+SUPABASE_KEY = "your-supabase-key"
+
+# 本番環境ではSecrets設定を使用
+# [secrets]
+# SUPABASE_KEY 

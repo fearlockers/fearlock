@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>脆弱性診断ツール - ダッシュボード</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- サイドバー -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>脆弱性診断ツール</h2>
+            </div>
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="user-info">
+                    <p id="user-email">ユーザー</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#dashboard"><i class="fas fa-tachometer-alt"></i> ダッシュボード</a>
+                    </li>
+                    <li>
+                        <a href="#scan"><i class="fas fa-search"></i> 新規プロジェクト</a>
+                    </li>
+                    <li>
+                        <a href="#history"><i class="fas fa-history"></i> スキャン履歴</a>
+                    </li>
+                    <li>
+                        <a href="#reports"><i class="fas fa-chart-bar"></i> レポート</a>
+                    </li>
+                    <li>
+                        <a href="#vulnerabilities"><i class="fas fa-bug"></i> 脆弱性データベース</a>
+                    </li>
+                    <li>
+                        <a href="#settings"><i class="fas fa-cog"></i> 設定</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i> ログアウト</button>
+            </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <header class="dashboard-header">
+                <h1>ダッシュボード</h1>
+            </header>
+            
+            <div class="dashboard-content">
+                <!-- コンテンツセクション -->
+                <div id="dashboard-section" class="content-section active">
+                    <div class="welcome-box">
+                        <h2>ようこそ <span id="welcome-user-email">ユーザー</span> さん</h2>
+                        <p>脆弱性診断ツールへようこそ。左側のメニューから機能を選択してください。</p>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-blue">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>0</h3>
+                                <p>実行スキャン数</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-red">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>0</h3>
+                                <p>高リスク脆弱性</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-orange">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>0</h3>
+                                <p>中リスク脆弱性</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>0</h3>
+                                <p>修正済み脆弱性</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 進行中プロジェクト一覧 -->
+                    <div class="section-header">
+                        <h2>進行中のプロジェクト</h2>
+                    </div>
+                    
+                    <div id="ongoingProjectsContainer">
+                        <!-- 進行中プロジェクトがここに表示されます -->
+                        <!-- サンプルプロジェクト -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <div class="project-title">サンプルプロジェクト</div>
+                                <div class="project-status status-running">実行中</div>
+                            </div>
+                            <div class="project-details">
+                                <div><i class="fas fa-globe"></i> https://example.com</div>
+                                <div><i class="fas fa-clock"></i> 開始: 2023/10/25 14:30</div>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 45%;"></div>
+                                </div>
+                                <div class="progress-stats">
+                                    <div>進捗: 45%</div>
+                                    <div>予想残り時間: 約15分</div>
+                                </div>
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn btn-sm btn-view-details">詳細を表示</button>
+                                <button class="btn btn-sm btn-cancel">中止</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 新規プロジェクト画面 -->
+                <div id="scan-section" class="content-section">
+                    <div class="card">
+                        <form id="new-scan-form">
+                            <div class="form-group">
+                                <label for="project-name">プロジェクト名</label>
+                                <input type="text" id="project-name" placeholder="プロジェクト名を入力" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="target-url">対象URL</label>
+                                <input type="url" id="target-url" placeholder="https://example.com" required>
+                            </div>
+                            
+                            <!-- 改良されたスキャンタイプUI -->
+                            <div class="form-group">
+                                <label>スキャンタイプ</label>
+                                <div class="scan-type-container">
+                                    <div class="scan-type-option selected" data-type="quick">
+                                        <i class="fas fa-bolt"></i>
+                                        <h4>クイックスキャン</h4>
+                                        <p>基本的なセキュリティチェックを素早く実行</p>
+                                        <input type="radio" name="scan-type" value="quick" checked style="display: none;">
+                                    </div>
+                                    <div class="scan-type-option" data-type="full">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <h4>フルスキャン</h4>
+                                        <p>詳細な脆弱性チェックを実行（時間がかかります）</p>
+                                        <input type="radio" name="scan-type" value="full" style="display: none;">
+                                    </div>
+                                    <div class="scan-type-option" data-type="custom">
+                                        <i class="fas fa-sliders-h"></i>
+                                        <h4>カスタム</h4>
+                                        <p>特定の脆弱性に焦点を当てたスキャン</p>
+                                        <input type="radio" name="scan-type" value="custom" style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 改良されたスキャンオプションUI -->
+                            <div class="form-group">
+                                <label>スキャンオプション</label>
+                                <div class="scan-options-container">
+                                    <div class="scan-option-card selected" data-option="xss">
+                                        <div class="scan-option-icon">
+                                            <i class="fas fa-code"></i>
+                                        </div>
+                                        <div class="scan-option-info">
+                                            <h4>XSS脆弱性</h4>
+                                            <p>クロスサイトスクリプティング攻撃の検出</p>
+                                        </div>
+                                    </div>
+                                    <div class="scan-option-card selected" data-option="sqli">
+                                        <div class="scan-option-icon">
+                                            <i class="fas fa-database"></i>
+                                        </div>
+                                        <div class="scan-option-info">
+                                            <h4>SQLインジェクション</h4>
+                                            <p>SQLインジェクション攻撃の検出</p>
+                                        </div>
+                                    </div>
+                                    <div class="scan-option-card selected" data-option="csrf">
+                                        <div class="scan-option-icon">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </div>
+                                        <div class="scan-option-info">
+                                            <h4>CSRF脆弱性</h4>
+                                            <p>クロスサイトリクエストフォージェリの検出</p>
+                                        </div>
+                                    </div>
+                                    <div class="scan-option-card" data-option="openredirect">
+                                        <div class="scan-option-icon">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </div>
+                                        <div class="scan-option-info">
+                                            <h4>オープンリダイレクト</h4>
+                                            <p>悪意のあるリダイレクトの検出</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">プロジェクト作成</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- プロジェクト詳細画面 -->
+                <div id="project-section" class="content-section">
+                    <div class="section-header">
+                        <div class="project-header-actions">
+                            <button id="back-to-dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> ダッシュボードに戻る</button>
+                        </div>
+                        <h2>プロジェクト詳細: <span id="project-title">プロジェクト名</span></h2>
+                    </div>
+                    
+                    <!-- ステップフローバー -->
+                    <div class="step-flow-bar">
+                        <div class="step active" data-step="info">
+                            <div class="step-number">1</div>
+                            <div class="step-label">プロジェクト情報</div>
+                        </div>
+                        <div class="step" data-step="progress">
+                            <div class="step-number">2</div>
+                            <div class="step-label">進捗状況</div>
+                        </div>
+                        <div class="step" data-step="results">
+                            <div class="step-number">3</div>
+                            <div class="step-label">スキャン結果</div>
+                        </div>
+                        <div class="step" data-step="report">
+                            <div class="step-number">4</div>
+                            <div class="step-label">レポート作成</div>
+                        </div>
+                        <div class="step-flow-line"></div>
+                    </div>
+                    
+                    <div class="card">
+                        <div id="project-details-content">
+                            <!-- プロジェクト詳細がここに表示されます -->
+                            <div class="project-tab-content active" id="project-info-tab">
+                                <div class="project-details-info">
+                                    <!-- プロジェクト情報がここに表示されます -->
+                                </div>
+                                <div class="project-scan-actions">
+                                    <button id="start-scan-btn" class="btn btn-primary"><i class="fas fa-play"></i> スキャンを実行</button>
+                                </div>
+                            </div>
+                            
+                            <div class="project-tab-content" id="project-progress-tab">
+                                <!-- 進捗状況がここに表示されます -->
+                            </div>
+                            
+                            <div class="project-tab-content" id="project-results-tab">
+                                <!-- スキャン結果がここに表示されます -->
+                            </div>
+                            
+                            <div class="project-tab-content" id="project-report-tab">
+                                <!-- レポート作成がここに表示されます -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 設定画面 -->
+                <div id="settings-section" class="content-section">
+                    <div class="section-header">
+                        <h2>設定</h2>
+                    </div>
+                    <div class="card">
+                        <h3>ユーザー情報</h3>
+                        <div id="user-details">
+                            <!-- ユーザー情報がここに表示されます -->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>アプリケーション設定</h3>
+                        <form id="settings-form">
+                            <div class="form-group">
+                                <label for="notification">通知設定</label>
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" id="email-notification" checked>
+                                        メール通知を有効にする
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="browser-notification">
+                                        ブラウザ通知を有効にする
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">設定を保存</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 他のセクションもここに追加できます -->
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html> 
