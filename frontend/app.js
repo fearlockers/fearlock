@@ -3,6 +3,12 @@ import config from './config.js';
 // デバッグ情報を表示
 console.log('設定を読み込み中...', config);
 
+// パス修正用ヘルパー関数
+function getBasePath() {
+  // GitHub Pagesでのパスを正しく処理
+  return window.location.pathname.includes('/frontend/') ? './' : './';
+}
+
 // Supabaseクライアントの初期化
 let supabase;
 try {
@@ -16,7 +22,10 @@ try {
   console.error('Supabaseクライアントの初期化に失敗しました:', error);
 }
 
-document.getElementById('login-form').addEventListener('submit', async function(event) {
+// ログインフォームの取得と処理
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+  loginForm.addEventListener('submit', async function(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -45,7 +54,8 @@ document.getElementById('login-form').addEventListener('submit', async function(
         console.error('ログイン処理中に例外が発生しました:', e);
         alert('ログイン処理中にエラーが発生しました: ' + e.message);
     }
-});
+  });
+}
 
 function checkPasswordStrength(password) {
     const minLength = 8;
@@ -113,7 +123,7 @@ if (signupForm) {
                 } else {
                     console.log('データベースに保存されました');
                     alert('新規登録成功');
-                    window.location.href = 'login.html'; // 新規登録後にログイン画面にリダイレクト
+                    window.location.href = './'; // 新規登録後にログイン画面にリダイレクト
                 }
             } catch (e) {
                 console.error('データベース処理中にエラーが発生しました:', e);
