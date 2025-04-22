@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログイン</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -14,7 +16,8 @@
             <input type="password" id="password" placeholder="パスワード" required>
             <button type="submit">ログイン</button>
         </form>
+        <p>アカウントをお持ちでない場合は<a href="signup.html">新規登録</a>してください。</p>
     </div>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html> 
