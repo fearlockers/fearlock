@@ -2,14 +2,14 @@
 const config = {
   // 本番環境用の設定（GitHub Pages）
   production: {
-    supabaseUrl: 'https://gvwvgukqpopfhrjtvscp.supabase.co',
-    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2d3ZndWtxcG9wZmhyanR2c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MzU2NjksImV4cCI6MjA2MDIxMTY2OX0.NjowVscyeXqsNwfXrYzwkO7ayxg9jJ97fEtpdlnavsE',
+    supabaseUrl: 'https://tvdckgrexwhqrzszynjh.supabase.co',
+    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I',
     apiUrl: 'https://fearlockers.github.io/fearlock/api'
   },
   // 開発環境用の設定
   development: {
-    supabaseUrl: 'https://gvwvgukqpopfhrjtvscp.supabase.co',
-    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2d3ZndWtxcG9wZmhyanR2c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MzU2NjksImV4cCI6MjA2MDIxMTY2OX0.NjowVscyeXqsNwfXrYzwkO7ayxg9jJ97fEtpdlnavsE',
+    supabaseUrl: 'https://tvdckgrexwhqrzszynjh.supabase.co',
+    supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I',
     apiUrl: 'http://localhost:5000/api'
   }
 };
