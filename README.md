@@ -21,7 +21,7 @@
 
 1. リポジトリをクローン
 ```
-git clone https://github.com/yourusername/fearlock.git
+git clone https://github.com/fearlockers/fearlock.git
 cd fearlock
 ```
 
@@ -62,4 +62,4 @@ python -m http.server
 
 1. Worker用のコードを作成
 2. Cloudflare Dashboardからデプロイ
-3. 環境変数として機密情報を設定 
+3. 環境変数として機密情報を設定
