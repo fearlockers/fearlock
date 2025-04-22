@@ -1,24 +1,49 @@
 import config from './config.js';
 
+// デバッグ情報を表示
+console.log('設定を読み込み中...', config);
+
 // Supabaseクライアントの初期化
-const supabase = supabase.createClient(config.supabaseUrl, config.supabaseKey);
+let supabase;
+try {
+  console.log('Supabaseクライアントを初期化します...');
+  console.log('URL:', config.supabaseUrl);
+  console.log('Key:', config.supabaseKey ? 'キーが設定されています' : 'キーが未設定です');
+  
+  supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+  console.log('Supabaseクライアントの初期化が完了しました', supabase);
+} catch (error) {
+  console.error('Supabaseクライアントの初期化に失敗しました:', error);
+}
 
 document.getElementById('login-form').addEventListener('submit', async function(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Supabaseのログイン処理
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-    });
+    console.log('ログイン試行中...', email);
 
-    if (error) {
-        alert('ログインに失敗しました: ' + error.message);
-    } else {
-        alert('ログイン成功');
-        window.location.href = 'dashboard.html';
+    try {
+        // Supabaseのログイン処理
+        console.log('Supabaseログイン処理開始...');
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+
+        console.log('ログイン応答:', { data, error });
+
+        if (error) {
+            console.error('ログインエラー:', error);
+            alert('ログインに失敗しました: ' + error.message);
+        } else {
+            console.log('ログイン成功:', data);
+            alert('ログイン成功');
+            window.location.href = 'dashboard.html';
+        }
+    } catch (e) {
+        console.error('ログイン処理中に例外が発生しました:', e);
+        alert('ログイン処理中にエラーが発生しました: ' + e.message);
     }
 });
 
@@ -55,10 +80,13 @@ if (signupForm) {
         }
 
         try {
+            console.log('Supabase新規登録処理開始...');
             const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: password,
             });
+
+            console.log('新規登録応答:', { data, error });
 
             if (error) {
                 console.error('新規登録に失敗しました:', error.message);
@@ -76,6 +104,8 @@ if (signupForm) {
                 const { error: insertError } = await supabase
                     .from('users')
                     .insert([{ id: user.id, email: email }]);
+
+                console.log('データベース挿入応答:', { insertError });
 
                 if (insertError) {
                     console.error('データベースへの保存に失敗しました:', insertError);

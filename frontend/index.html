@@ -17,7 +17,21 @@
             <button type="submit">ログイン</button>
         </form>
         <p>アカウントをお持ちでない場合は<a href="signup.html">新規登録</a>してください。</p>
+        <div id="login-status" class="status-message"></div>
     </div>
+    <script>
+        // デバッグ用のステータス表示関数
+        function updateStatus(message, isError = false) {
+            const statusElement = document.getElementById('login-status');
+            statusElement.textContent = message;
+            statusElement.className = 'status-message ' + (isError ? 'error' : 'success');
+            console.log(isError ? 'エラー: ' : 'ステータス: ', message);
+        }
+
+        window.addEventListener('error', function(event) {
+            updateStatus('JavaScriptエラー: ' + event.message, true);
+        });
+    </script>
     <script type="module" src="app.js"></script>
 </body>
 </html> 
