@@ -1,7 +1,53 @@
 // Supabaseの設定
 const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        storageKey: 'sb-session-cookie',
+        storage: {
+            getItem: (key) => {
+                return getCookie(key);
+            },
+            setItem: (key, value) => {
+                setCookie(key, value, 7); // 7日間有効なCookie
+            },
+            removeItem: (key) => {
+                removeCookie(key);
+            }
+        }
+    }
+});
+
+// Cookieヘルパー関数
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "; expires=" + date.toUTCString();
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Strict";
+    console.log(`Cookieを設定: ${name}`);
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) {
+            const value = decodeURIComponent(c.substring(nameEQ.length, c.length));
+            return value;
+        }
+    }
+    return null;
+}
+
+function removeCookie(name) {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
+    console.log(`Cookieを削除: ${name}`);
+}
 
 // ユーザーのセッションをチェック
 async function checkSession() {

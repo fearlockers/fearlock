@@ -14,6 +14,7 @@
         <form id="signup-form">
             <input type="email" id="email" placeholder="メールアドレス" required>
             <input type="password" id="password" placeholder="パスワード" required>
+            <input type="password" id="password-confirm" placeholder="パスワード確認" required>
             <p class="password-hint">8文字以上の大文字、小文字、数字、特殊文字を含めてください</p>
             <button type="submit" id="signup-button">登録する</button>
         </form>
@@ -24,7 +25,52 @@
         // Supabaseの設定
         const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Cookie関連のヘルパー関数
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Strict";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            }
+            return null;
+        }
+
+        function removeCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
+        }
+        
+        // Supabaseクライアントの初期化（Cookieストレージ使用）
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: false,
+                storageKey: 'sb-session-cookie',
+                storage: {
+                    getItem: (key) => {
+                        return getCookie(key);
+                    },
+                    setItem: (key, value) => {
+                        setCookie(key, value, 7); // 7日間有効なCookie
+                    },
+                    removeItem: (key) => {
+                        removeCookie(key);
+                    }
+                }
+            }
+        });
 
         // ステータスメッセージの表示
         function updateStatus(message, isError = false) {
@@ -39,6 +85,34 @@
         window.addEventListener('error', function(event) {
             updateStatus('JavaScriptエラー: ' + event.message, true);
         });
+
+        // パスワード強度の確認
+        function checkPasswordStrength(password) {
+            if (password.length < 8) {
+                return { valid: false, message: 'パスワードは8文字以上必要です' };
+            }
+            
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            
+            if (!(hasUpperCase && hasLowerCase && hasNumbers)) {
+                return { 
+                    valid: false, 
+                    message: 'パスワードは大文字、小文字、数字を含む必要があります' 
+                };
+            }
+            
+            if (!hasSpecialChar) {
+                return { 
+                    valid: false, 
+                    message: 'パスワードには特殊文字(!@#$%^&*など)を含めてください' 
+                };
+            }
+            
+            return { valid: true, message: '有効なパスワード' };
+        }
 
         // すでにログイン済みの場合はダッシュボードへ
         async function checkAndRedirect() {
@@ -61,99 +135,62 @@
             }
         }
 
-        // パスワードの強度をチェック
-        function checkPasswordStrength(password) {
-            const minLength = 8;
-            const hasUpperCase = /[A-Z]/.test(password);
-            const hasLowerCase = /[a-z]/.test(password);
-            const hasNumbers = /[0-9]/.test(password);
-            const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-            if (password.length < minLength) {
-                return { valid: false, message: 'パスワードは8文字以上である必要があります' };
-            }
-            
-            if (!hasUpperCase || !hasLowerCase) {
-                return { valid: false, message: 'パスワードは大文字と小文字を含む必要があります' };
-            }
-            
-            if (!hasNumbers) {
-                return { valid: false, message: 'パスワードは数字を含む必要があります' };
-            }
-            
-            if (!hasSpecialChars) {
-                return { valid: false, message: 'パスワードは特殊文字を含む必要があります' };
-            }
-            
-            return { valid: true };
-        }
-
         // ページ読み込み時にセッションチェック
         document.addEventListener('DOMContentLoaded', checkAndRedirect);
 
-        // 新規登録フォームの処理
+        // 登録フォームの処理
         document.getElementById('signup-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const signupButton = document.getElementById('signup-button');
             signupButton.disabled = true;
-            signupButton.textContent = '登録処理中...';
+            signupButton.textContent = '登録中...';
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
-            // パスワードの強度をチェック
-            const passwordCheck = checkPasswordStrength(password);
-            if (!passwordCheck.valid) {
-                updateStatus(passwordCheck.message, true);
-                signupButton.disabled = false;
-                signupButton.textContent = '登録する';
-                return;
-            }
+            const passwordConfirmation = document.getElementById('password-confirm').value;
             
             try {
-                updateStatus('新規登録処理中...', false);
-                console.log('新規登録試行中...', email);
+                // パスワードの一致確認
+                if (password !== passwordConfirmation) {
+                    throw new Error('パスワードと確認用パスワードが一致しません');
+                }
+                
+                // パスワード強度の確認
+                const strengthCheck = checkPasswordStrength(password);
+                if (!strengthCheck.valid) {
+                    throw new Error(strengthCheck.message);
+                }
+                
+                updateStatus('アカウント作成中...', false);
+                console.log('サインアップ試行中...', email);
                 
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
+                    options: {
+                        // オプションが必要であればここに追加
+                    }
                 });
                 
                 if (error) {
                     throw error;
                 }
                 
-                console.log('新規登録成功:', data);
+                console.log('サインアップ成功:', data);
                 
-                // ユーザー情報をデータベースに保存
-                if (data.user) {
-                    try {
-                        const { error: insertError } = await supabase
-                            .from('users')
-                            .insert([{ id: data.user.id, email: data.user.email }]);
-                            
-                        if (insertError) {
-                            console.error('ユーザー情報の保存に失敗しました:', insertError);
-                            updateStatus('ユーザー情報の保存に失敗しましたが、登録は完了しました。', true);
-                        }
-                    } catch (dbError) {
-                        console.error('データベース操作でエラーが発生しました:', dbError);
-                    }
+                if (data.user.identities && data.user.identities.length === 0) {
+                    updateStatus('このメールアドレスはすでに登録されています。ログインページからログインしてください。', true);
+                } else {
+                    updateStatus('登録成功！確認メールを送信しました。メールを確認して、アカウントを有効化してください。', false);
                 }
                 
-                updateStatus('登録が完了しました！ログインページへリダイレクト中...', false);
-                
-                // 短いタイムアウト後にリダイレクト（画面の更新を確認できるように）
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1500);
-                
             } catch (error) {
-                console.error('新規登録中にエラーが発生しました:', error);
-                updateStatus(`新規登録に失敗しました: ${error.message}`, true);
+                console.error('登録中にエラーが発生しました:', error);
+                updateStatus(`登録に失敗しました: ${error.message}`, true);
+            } finally {
                 signupButton.disabled = false;
-                signupButton.textContent = '登録する';
+                signupButton.textContent = '登録';
             }
         });
     </script>

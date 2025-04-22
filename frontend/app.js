@@ -4,6 +4,34 @@ import config from './config.js';
 console.log('アプリケーション初期化中...');
 console.log('環境設定:', config);
 
+// Cookie関連のヘルパー関数
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "; expires=" + date.toUTCString();
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Strict";
+    console.log(`Cookieを設定: ${name}`);
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) {
+            const value = decodeURIComponent(c.substring(nameEQ.length, c.length));
+            return value;
+        }
+    }
+    return null;
+}
+
+function removeCookie(name) {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
+    console.log(`Cookieを削除: ${name}`);
+}
+
 // パス修正用ヘルパー関数
 function getBasePath() {
   // GitHub Pagesでのパスを正しく処理
@@ -17,7 +45,25 @@ try {
   console.log('URL:', config.supabaseUrl);
   console.log('Key:', config.supabaseKey ? 'キーが設定されています' : 'キーが未設定です');
   
-  supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+  supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        storageKey: 'sb-session-cookie',
+        storage: {
+            getItem: (key) => {
+                return getCookie(key);
+            },
+            setItem: (key, value) => {
+                setCookie(key, value, 7); // 7日間有効なCookie
+            },
+            removeItem: (key) => {
+                removeCookie(key);
+            }
+        }
+    }
+  });
   console.log('Supabaseクライアントの初期化が完了しました', supabase);
 } catch (error) {
   console.error('Supabaseクライアントの初期化に失敗しました:', error);
@@ -48,9 +94,6 @@ if (loginForm) {
             alert('ログインに失敗しました: ' + error.message);
         } else {
             console.log('ログイン成功:', data);
-            // ログイン状態をローカルストレージに保存
-            localStorage.setItem('isLoggedIn', 'true');
-            console.log('ログイン状態をローカルストレージに保存しました');
             window.location.href = 'dashboard.html';
         }
     } catch (e) {
