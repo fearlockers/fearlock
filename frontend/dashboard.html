@@ -318,7 +318,141 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/auth.js"></script>
+    <script>
+        // Supabaseの設定
+        const supabaseUrl = 'https://gvwvgukqpopfhrjtvscp.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2d3ZndWtxcG9wZmhyanR2c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MzU2NjksImV4cCI6MjA2MDIxMTY2OX0.NjowVscyeXqsNwfXrYzwkO7ayxg9jJ97fEtpdlnavsE';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // セッションチェック
+        async function checkSession() {
+            try {
+                console.log('セッションをチェック中...');
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('セッションの取得に失敗しました:', error);
+                    redirectToLogin();
+                    return null;
+                }
+                
+                console.log('セッションデータ:', data);
+
+                if (!data.session) {
+                    console.log('セッションがありません。ログインページへリダイレクト');
+                    redirectToLogin();
+                    return null;
+                }
+                
+                return data.session;
+            } catch (e) {
+                console.error('セッションチェック中にエラーが発生しました:', e);
+                redirectToLogin();
+                return null;
+            }
+        }
+
+        // ログインページへリダイレクト
+        function redirectToLogin() {
+            console.log('ログインページへリダイレクト');
+            window.location.href = 'login.html';
+        }
+
+        // ユーザー情報の表示
+        function displayUserInfo(user) {
+            if (!user) {
+                console.error('ユーザー情報が存在しません');
+                return;
+            }
+
+            console.log('表示するユーザー情報:', user);
+
+            // ユーザーのメールアドレスを表示
+            const userEmailElements = document.querySelectorAll('#user-email, #welcome-user-email');
+            userEmailElements.forEach(element => {
+                if (element) {
+                    element.textContent = user.email;
+                }
+            });
+
+            // ユーザーの詳細情報を表示
+            const userDetailsElement = document.getElementById('user-details');
+            if (userDetailsElement) {
+                userDetailsElement.innerHTML = `
+                    <p><strong>ユーザーID:</strong> ${user.id}</p>
+                    <p><strong>メールアドレス:</strong> ${user.email}</p>
+                    <p><strong>最終更新:</strong> ${new Date(user.updated_at || user.created_at).toLocaleString()}</p>
+                `;
+            }
+        }
+
+        // ページ初期化
+        async function initDashboard() {
+            const session = await checkSession();
+            if (session) {
+                displayUserInfo(session.user);
+                setupLogoutButton();
+                setupDashboardUI();
+            }
+        }
+
+        // ログアウトボタンの設定
+        function setupLogoutButton() {
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async function() {
+                    try {
+                        const { error } = await supabase.auth.signOut();
+                        
+                        if (error) {
+                            throw error;
+                        }
+                        
+                        console.log('ログアウト成功');
+                        redirectToLogin();
+                        
+                    } catch (error) {
+                        console.error('ログアウト中にエラーが発生しました:', error);
+                        alert(`ログアウトに失敗しました: ${error.message}`);
+                    }
+                });
+            }
+        }
+
+        // ダッシュボードUIの設定
+        function setupDashboardUI() {
+            // サイドバーナビゲーションの設定
+            const navItems = document.querySelectorAll('.sidebar-nav li a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // アクティブなナビアイテムを更新
+                    navItems.forEach(nav => nav.parentElement.classList.remove('active'));
+                    this.parentElement.classList.add('active');
+                    
+                    // 対応するセクションを表示
+                    const targetId = this.getAttribute('href').slice(1);
+                    const sections = document.querySelectorAll('.content-section');
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId + '-section') {
+                            section.classList.add('active');
+                        }
+                    });
+                    
+                    // ヘッダータイトルを更新
+                    const headerTitle = document.querySelector('.dashboard-header h1');
+                    if (headerTitle) {
+                        headerTitle.textContent = this.textContent.trim();
+                    }
+                });
+            });
+        }
+
+        // ページ読み込み時に初期化
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
     <script src="js/dashboard.js"></script>
 </body>
 </html> 
