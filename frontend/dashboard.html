@@ -99,7 +99,7 @@
                                 <i class="fas fa-search"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>0</h3>
+                                <h3 id="total-projects-count">0</h3>
                                 <p>実行スキャン数</p>
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                                 <i class="fas fa-exclamation-triangle"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>0</h3>
+                                <h3 id="high-risk-count">0</h3>
                                 <p>高リスク脆弱性</p>
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                                 <i class="fas fa-exclamation-circle"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>0</h3>
+                                <h3 id="medium-risk-count">0</h3>
                                 <p>中リスク脆弱性</p>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                                 <i class="fas fa-check-circle"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>0</h3>
+                                <h3 id="fixed-count">0</h3>
                                 <p>修正済み脆弱性</p>
                             </div>
                         </div>
@@ -134,34 +134,16 @@
                     
                     <!-- 進行中プロジェクト一覧 -->
                     <div class="section-header">
-                        <h2>進行中のプロジェクト</h2>
+                        <h2>プロジェクト一覧</h2>
+                        <button id="refresh-projects-btn" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-sync-alt"></i> 更新
+                        </button>
                     </div>
                     
                     <div id="ongoingProjectsContainer">
-                        <!-- 進行中プロジェクトがここに表示されます -->
-                        <!-- サンプルプロジェクト -->
-                        <div class="project-card">
-                            <div class="project-header">
-                                <div class="project-title">サンプルプロジェクト</div>
-                                <div class="project-status status-running">実行中</div>
-                            </div>
-                            <div class="project-details">
-                                <div><i class="fas fa-globe"></i> https://example.com</div>
-                                <div><i class="fas fa-clock"></i> 開始: 2023/10/25 14:30</div>
-                            </div>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 45%;"></div>
-                                </div>
-                                <div class="progress-stats">
-                                    <div>進捗: 45%</div>
-                                    <div>予想残り時間: 約15分</div>
-                                </div>
-                            </div>
-                            <div class="project-actions">
-                                <button class="btn btn-sm btn-view-details">詳細を表示</button>
-                                <button class="btn btn-sm btn-cancel">中止</button>
-                            </div>
+                        <!-- プロジェクトがここに動的に表示されます -->
+                        <div class="loading-projects">
+                            <i class="fas fa-spinner fa-spin"></i> プロジェクトを読み込み中...
                         </div>
                     </div>
                 </div>
@@ -466,13 +448,54 @@
             }
         }
 
+        // 統計情報を更新する関数
+        async function updateStatistics(userId) {
+            try {
+                // プロジェクト数の取得
+                const { data: projectsData, error: projectsError } = await supabase
+                    .from('projects')
+                    .select('id, status')
+                    .eq('user_id', userId);
+                
+                if (projectsError) throw projectsError;
+                
+                // 統計情報の計算
+                const totalProjects = projectsData ? projectsData.length : 0;
+                
+                // 統計情報の表示を更新
+                document.getElementById('total-projects-count').textContent = totalProjects;
+                
+                // 他の統計情報も将来的に追加可能
+                
+                console.log('統計情報を更新しました:', { totalProjects });
+            } catch (error) {
+                console.error('統計情報の更新中にエラーが発生しました:', error);
+            }
+        }
+
         // ページ初期化
         async function initDashboard() {
             const session = await checkSession();
             if (session) {
-                displayUserInfo(session.user);
+                const user = session.user;
+                displayUserInfo(user);
                 setupLogoutButton();
                 setupDashboardUI();
+                
+                // プロジェクト一覧を読み込む
+                await loadUserProjects(user.id);
+                
+                // 統計情報を更新
+                await updateStatistics(user.id);
+                
+                // 更新ボタンのイベントリスナーを設定
+                const refreshBtn = document.getElementById('refresh-projects-btn');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', async () => {
+                        await loadUserProjects(user.id);
+                        await updateStatistics(user.id);
+                    });
+                }
             }
         }
 
@@ -528,6 +551,208 @@
                     }
                 });
             });
+        }
+
+        // ユーザーのプロジェクト一覧を読み込む関数
+        async function loadUserProjects(userId) {
+            if (!userId) {
+                console.warn('ユーザーIDが指定されていないためプロジェクト一覧を読み込めません');
+                return;
+            }
+            
+            const ongoingContainer = document.getElementById('ongoingProjectsContainer');
+            if (!ongoingContainer) {
+                console.warn('プロジェクト表示用コンテナが見つかりません');
+                return;
+            }
+            
+            // ローディング表示
+            ongoingContainer.innerHTML = '<div class="loading-projects"><i class="fas fa-spinner fa-spin"></i> プロジェクトを読み込み中...</div>';
+            
+            try {
+                console.log(`ユーザーID: ${userId} のプロジェクト一覧を取得中...`);
+                
+                // プロジェクト一覧を取得
+                const { data, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('プロジェクト一覧取得エラー:', error);
+                    throw error;
+                }
+                
+                console.log(`${data ? data.length : 0}件のプロジェクトを取得しました:`, data);
+                
+                // コンテナを空にする
+                ongoingContainer.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    ongoingContainer.innerHTML = '<p class="no-projects">プロジェクトがありません。新規プロジェクトを作成してください。</p>';
+                    return;
+                }
+                
+                // プロジェクトカードを作成
+                data.forEach(project => {
+                    const projectCard = createProjectCard(project);
+                    ongoingContainer.appendChild(projectCard);
+                });
+            } catch (error) {
+                console.error('プロジェクト読み込みエラー:', error);
+                ongoingContainer.innerHTML = '<p class="error">プロジェクトの読み込み中にエラーが発生しました。</p>';
+            }
+        }
+
+        // プロジェクトカードを作成する関数
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.setAttribute('data-project-id', project.id);
+            
+            // ステータスに応じたクラスを追加
+            const statusClass = getStatusClass(project.status);
+            
+            // プログレスバーの表示
+            const progressWidth = project.progress || 0;
+            
+            card.innerHTML = `
+                <div class="project-header">
+                    <div class="project-title">${escapeHtml(project.name)}</div>
+                    <div class="project-status ${statusClass}">${getStatusText(project.status)}</div>
+                </div>
+                <div class="project-details">
+                    <div><i class="fas fa-globe"></i> ${escapeHtml(project.target_url)}</div>
+                    <div><i class="fas fa-clock"></i> 作成: ${new Date(project.created_at).toLocaleString()}</div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressWidth}%;"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <div>進捗: ${progressWidth}%</div>
+                        <div>${getEstimatedTimeRemaining(project)}</div>
+                    </div>
+                </div>
+                <div class="project-actions">
+                    <button class="btn btn-sm btn-view-details" data-project-id="${project.id}">詳細を表示</button>
+                    ${project.status === 'running' ? '<button class="btn btn-sm btn-cancel" data-project-id="' + project.id + '">中止</button>' : ''}
+                </div>
+            `;
+            
+            // イベントリスナーの追加
+            const viewButton = card.querySelector('.btn-view-details');
+            viewButton.addEventListener('click', () => {
+                showProjectDetails(project.id);
+            });
+            
+            const cancelButton = card.querySelector('.btn-cancel');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', () => {
+                    cancelProject(project.id);
+                });
+            }
+            
+            return card;
+        }
+
+        // HTMLエスケープ関数
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // ステータスに応じたクラスを取得
+        function getStatusClass(status) {
+            switch (status) {
+                case 'pending': return 'status-pending';
+                case 'running': return 'status-running';
+                case 'completed': return 'status-completed';
+                case 'failed': return 'status-failed';
+                case 'cancelled': return 'status-cancelled';
+                default: return '';
+            }
+        }
+
+        // ステータスに応じたテキストを取得
+        function getStatusText(status) {
+            switch (status) {
+                case 'pending': return '準備完了';
+                case 'running': return '実行中';
+                case 'completed': return '完了';
+                case 'failed': return '失敗';
+                case 'cancelled': return 'キャンセル';
+                default: return status;
+            }
+        }
+
+        // 予想残り時間を取得
+        function getEstimatedTimeRemaining(project) {
+            if (project.status === 'completed') {
+                return '完了';
+            }
+            
+            if (project.status === 'failed' || project.status === 'cancelled') {
+                return '-';
+            }
+            
+            if (project.status === 'pending') {
+                return '未開始';
+            }
+            
+            // 簡易的な残り時間計算（実際には正確なアルゴリズムが必要）
+            const progress = project.progress || 0;
+            if (progress === 0) return '計算中...';
+            
+            const remaining = 100 - progress;
+            if (remaining <= 10) return '残り僅か';
+            if (remaining <= 30) return '残り数分';
+            return '約15分';
+        }
+
+        // プロジェクト詳細を表示
+        function showProjectDetails(projectId) {
+            console.log('プロジェクト詳細を表示:', projectId);
+            // プロジェクト詳細表示の実装（今後追加）
+            alert('プロジェクト詳細機能は開発中です（プロジェクトID: ' + projectId + '）');
+        }
+
+        // プロジェクトをキャンセル
+        async function cancelProject(projectId) {
+            if (!confirm('本当にこのプロジェクトをキャンセルしますか？')) {
+                return;
+            }
+            
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+                    .eq('id', projectId);
+                
+                if (error) {
+                    console.error('プロジェクトキャンセルエラー:', error);
+                    throw error;
+                }
+                
+                console.log('プロジェクトがキャンセルされました:', projectId);
+                
+                // セッション情報を取得してユーザーIDを抽出
+                const { data } = await supabase.auth.getSession();
+                if (data.session) {
+                    // プロジェクト一覧を更新
+                    await loadUserProjects(data.session.user.id);
+                }
+            } catch (error) {
+                console.error('プロジェクトキャンセルエラー:', error);
+                alert('プロジェクトのキャンセル中にエラーが発生しました。');
+            }
         }
 
         // ページ読み込み時に初期化
@@ -699,5 +924,6 @@
         });
     </script>
     <script src="js/dashboard.js"></script>
+    <script src="js/debug.js"></script>
 </body>
 </html> 

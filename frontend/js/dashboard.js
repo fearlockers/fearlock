@@ -49,6 +49,262 @@ function removeCookie(name) {
     console.log(`Cookieを削除: ${name}`);
 }
 
+// デバイス情報の取得
+function getDeviceInfo() {
+    const device = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        isMobile: window.innerWidth <= 768,
+        isTablet: window.innerWidth > 768 && window.innerWidth <= 1024,
+        isDesktop: window.innerWidth > 1024,
+        userAgent: navigator.userAgent
+    };
+    
+    return device;
+}
+
+// フォーマット関数
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('ja-JP', {
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+// レポートの作成
+function generateReportHTML(projectData) {
+    if (!projectData) return '';
+    
+    const vulnerabilityCount = {
+        high: 0,
+        medium: 0,
+        low: 0,
+        info: 0
+    };
+    
+    // 脆弱性の集計（実際のデータ構造に合わせて調整が必要）
+    if (projectData.results && Array.isArray(projectData.results)) {
+        projectData.results.forEach(vuln => {
+            if (vuln.severity && vulnerabilityCount[vuln.severity.toLowerCase()] !== undefined) {
+                vulnerabilityCount[vuln.severity.toLowerCase()]++;
+            }
+        });
+    }
+    
+    return `
+        <div class="report-header">
+            <h3>${escapeHtml(projectData.name)} - スキャンレポート</h3>
+            <p>対象URL: ${escapeHtml(projectData.target_url)}</p>
+            <p>実行日時: ${formatDate(projectData.created_at)}</p>
+        </div>
+        <div class="report-summary">
+            <div class="vuln-stat high">
+                <span class="count">${vulnerabilityCount.high}</span>
+                <span class="label">高リスク</span>
+            </div>
+            <div class="vuln-stat medium">
+                <span class="count">${vulnerabilityCount.medium}</span>
+                <span class="label">中リスク</span>
+            </div>
+            <div class="vuln-stat low">
+                <span class="count">${vulnerabilityCount.low}</span>
+                <span class="label">低リスク</span>
+            </div>
+            <div class="vuln-stat info">
+                <span class="count">${vulnerabilityCount.info}</span>
+                <span class="label">情報</span>
+            </div>
+        </div>
+    `;
+}
+
+// HTMLエスケープ関数
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// UIユーティリティ
+function showModal(title, content) {
+    // モーダルがすでに存在する場合は削除
+    const existingModal = document.querySelector('.modal-container');
+    if (existingModal) {
+        document.body.removeChild(existingModal);
+    }
+    
+    // モーダル要素の作成
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'modal-container';
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    
+    const modalHeader = document.createElement('div');
+    modalHeader.className = 'modal-header';
+    
+    const modalTitle = document.createElement('h3');
+    modalTitle.textContent = title;
+    
+    const closeButton = document.createElement('button');
+    closeButton.className = 'modal-close';
+    closeButton.innerHTML = '&times;';
+    closeButton.addEventListener('click', () => {
+        document.body.removeChild(modalContainer);
+    });
+    
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    
+    if (typeof content === 'string') {
+        modalContent.innerHTML = content;
+    } else {
+        modalContent.appendChild(content);
+    }
+    
+    // モーダル要素の構築
+    modalHeader.appendChild(modalTitle);
+    modalHeader.appendChild(closeButton);
+    
+    modal.appendChild(modalHeader);
+    modal.appendChild(modalContent);
+    
+    modalContainer.appendChild(modal);
+    
+    // モーダル外クリックで閉じる
+    modalContainer.addEventListener('click', (e) => {
+        if (e.target === modalContainer) {
+            document.body.removeChild(modalContainer);
+        }
+    });
+    
+    // モーダルを表示
+    document.body.appendChild(modalContainer);
+    
+    return modalContainer;
+}
+
+// 通知表示
+function showNotification(message, type = 'info', duration = 3000) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // 通知コンテナの作成/取得
+    let notificationContainer = document.querySelector('.notification-container');
+    if (!notificationContainer) {
+        notificationContainer = document.createElement('div');
+        notificationContainer.className = 'notification-container';
+        document.body.appendChild(notificationContainer);
+    }
+    
+    // 通知を追加
+    notificationContainer.appendChild(notification);
+    
+    // 一定時間後に通知を削除
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+            
+            // 通知がなくなったらコンテナも削除
+            if (notificationContainer.children.length === 0) {
+                document.body.removeChild(notificationContainer);
+            }
+        }, 300);
+    }, duration);
+    
+    return notification;
+}
+
+// CSVエクスポート
+function exportToCSV(data, filename = 'export.csv') {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        console.error('エクスポートするデータがありません');
+        return false;
+    }
+    
+    // ヘッダー行の作成
+    const headers = Object.keys(data[0]);
+    
+    // CSVデータの作成
+    let csvContent = headers.join(',') + '\n';
+    
+    data.forEach(row => {
+        const values = headers.map(header => {
+            const value = row[header] === null || row[header] === undefined ? '' : row[header];
+            // 値に特殊文字が含まれている場合は引用符で囲む
+            const escaped = String(value).replace(/"/g, '""');
+            return `"${escaped}"`;
+        });
+        csvContent += values.join(',') + '\n';
+    });
+    
+    // CSVのダウンロード
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.display = 'none';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    return true;
+}
+
+// グローバルに公開する機能
+window.dashboardUtils = {
+    cookies: {
+        set: setCookie,
+        get: getCookie,
+        remove: removeCookie
+    },
+    device: getDeviceInfo,
+    format: {
+        date: formatDate,
+        bytes: formatBytes
+    },
+    ui: {
+        showModal,
+        showNotification
+    },
+    report: {
+        generate: generateReportHTML
+    },
+    export: {
+        csv: exportToCSV
+    },
+    escapeHtml
+};
+
 // 現在のユーザーのセッション情報
 let currentUser = null;
 
@@ -534,5 +790,63 @@ async function cancelProject(projectId) {
     } catch (error) {
         console.error('プロジェクトキャンセルエラー:', error);
         alert('プロジェクトのキャンセル中にエラーが発生しました。');
+    }
+}
+
+// 統計情報を更新する関数
+async function updateStatistics(userId) {
+    try {
+        // プロジェクト数の取得
+        const { data: projectsData, error: projectsError } = await supabase
+            .from('projects')
+            .select('id, status, results')
+            .eq('user_id', userId);
+        
+        if (projectsError) throw projectsError;
+        
+        // 統計情報の計算
+        const totalProjects = projectsData ? projectsData.length : 0;
+        let highRiskCount = 0;
+        let mediumRiskCount = 0;
+        let fixedCount = 0;
+        
+        // 脆弱性カウントの計算
+        if (projectsData && projectsData.length > 0) {
+            projectsData.forEach(project => {
+                if (project.results) {
+                    try {
+                        // JSONBデータを解析
+                        const results = typeof project.results === 'string' 
+                            ? JSON.parse(project.results) 
+                            : project.results;
+                            
+                        if (Array.isArray(results)) {
+                            results.forEach(result => {
+                                if (result.severity === 'high') highRiskCount++;
+                                if (result.severity === 'medium') mediumRiskCount++;
+                                if (result.fixed) fixedCount++;
+                            });
+                        }
+                    } catch (e) {
+                        console.error('結果データの解析エラー:', e);
+                    }
+                }
+            });
+        }
+        
+        // 統計情報の表示を更新
+        document.getElementById('total-projects-count').textContent = totalProjects;
+        document.getElementById('high-risk-count').textContent = highRiskCount;
+        document.getElementById('medium-risk-count').textContent = mediumRiskCount;
+        document.getElementById('fixed-count').textContent = fixedCount;
+        
+        console.log('統計情報を更新しました:', {
+            totalProjects,
+            highRiskCount,
+            mediumRiskCount,
+            fixedCount
+        });
+    } catch (error) {
+        console.error('統計情報の更新中にエラーが発生しました:', error);
     }
 } 
