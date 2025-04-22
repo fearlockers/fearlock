@@ -1060,4 +1060,290 @@ body {
 @keyframes fadeOut {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+
+/* プロジェクト詳細ページのスタイル追加 */
+.project-header-actions {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+/* スキャン状態バナー */
+.scan-status-banner {
+    margin-bottom: 20px;
+    padding: 12px 15px;
+    border-radius: 5px;
+    background-color: #f0f7ff;
+    border-left: 4px solid #3b82f6;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+.scan-status-banner.success {
+    background-color: #ecfdf5;
+    border-left-color: #10b981;
+}
+
+.scan-status-banner i {
+    margin-right: 10px;
+    font-size: 20px;
+    color: #3b82f6;
+}
+
+.scan-status-banner.success i {
+    color: #10b981;
+}
+
+/* 進捗表示の拡張スタイル */
+.progress-bar-large {
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+}
+
+.progress-bar-large .progress-fill {
+    height: 100%;
+    background-color: #3b82f6;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progress-percentage {
+    text-align: right;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 10px;
+}
+
+/* ステータス情報 */
+.status-info {
+    background-color: #f8fafc;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.status-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* スキャンログのスタイル */
+.scan-log {
+    margin-top: 20px;
+}
+
+.scan-log h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #4b5563;
+}
+
+.log-container {
+    background-color: #1e293b;
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: monospace;
+    color: #e2e8f0;
+}
+
+.log-entry {
+    padding: 5px 0;
+    border-bottom: 1px solid #334155;
+    font-size: 13px;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-entry.success {
+    color: #34d399;
+    font-weight: bold;
+}
+
+/* スキャンアクション */
+.scan-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+/* 結果タブのスタイル */
+.results-summary {
+    margin-bottom: 20px;
+}
+
+.vulnerability-summary {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.summary-item {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.summary-item .count {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.summary-item span {
+    font-size: 14px;
+}
+
+.summary-item.critical {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.summary-item.high {
+    background-color: #ffedd5;
+    color: #c2410c;
+}
+
+.summary-item.medium {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+.summary-item.low {
+    background-color: #ecfdf5;
+    color: #065f46;
+}
+
+.vulnerability-list {
+    margin-top: 25px;
+}
+
+.vulnerability-list h4 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #4b5563;
+}
+
+.vulnerability-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.vulnerability-header {
+    padding: 10px 15px;
+    background-color: #f9fafb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.vulnerability-title {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.vulnerability-severity {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #e5e7eb;
+}
+
+.vulnerability-item.severity-high .vulnerability-header {
+    background-color: #fee2e2;
+}
+
+.vulnerability-item.severity-medium .vulnerability-header {
+    background-color: #ffedd5;
+}
+
+.vulnerability-item.severity-low .vulnerability-header {
+    background-color: #fef9c3;
+}
+
+.vulnerability-item.severity-info .vulnerability-header {
+    background-color: #ecfdf5;
+}
+
+.vulnerability-details {
+    padding: 10px 15px;
+}
+
+.vulnerability-details p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.fixed-status {
+    color: #10b981;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.no-vulnerabilities, .no-results {
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+    background-color: #f9fafb;
+    border-radius: 5px;
+    border: 1px dashed #d1d5db;
+    margin: 20px 0;
+}
+
+.no-results i {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #6b7280;
+}
+
+/* レポートタブのスタイル */
+.report-container {
+    padding: 10px 0;
+}
+
+.report-actions {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.report-preview {
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: white;
+    min-height: 500px;
 } 

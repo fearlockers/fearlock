@@ -760,10 +760,542 @@ function getEstimatedTimeRemaining(project) {
 }
 
 // プロジェクト詳細を表示
-function showProjectDetails(projectId) {
+async function showProjectDetails(projectId) {
     console.log('プロジェクト詳細を表示:', projectId);
-    // プロジェクト詳細表示の実装（今後追加）
-    alert('プロジェクト詳細機能は開発中です（プロジェクトID: ' + projectId + '）');
+    
+    try {
+        // プロジェクトデータを取得
+        const { data: project, error } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('id', projectId)
+            .single();
+        
+        if (error) {
+            console.error('プロジェクト取得エラー:', error);
+            throw error;
+        }
+        
+        if (!project) {
+            throw new Error('プロジェクトが見つかりません');
+        }
+        
+        console.log('取得したプロジェクト詳細:', project);
+        
+        // プロジェクト詳細画面に切り替え
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        const projectSection = document.getElementById('project-section');
+        if (projectSection) {
+            projectSection.classList.add('active');
+        }
+        
+        // プロジェクトタイトルを設定
+        const projectTitle = document.getElementById('project-title');
+        if (projectTitle) {
+            projectTitle.textContent = project.name;
+        }
+        
+        // ダッシュボードヘッダーのタイトルを更新
+        const headerTitle = document.querySelector('.dashboard-header h1');
+        if (headerTitle) {
+            headerTitle.textContent = 'プロジェクト詳細';
+        }
+        
+        // ステップバーの初期状態を設定
+        setupStepFlow(project);
+        
+        // プロジェクト情報を表示
+        displayProjectInfo(project);
+        
+        // ダッシュボードに戻るボタンのイベントリスナーを設定
+        const backButton = document.getElementById('back-to-dashboard');
+        if (backButton) {
+            // 既存のイベントリスナーを削除
+            const newBackButton = backButton.cloneNode(true);
+            backButton.parentNode.replaceChild(newBackButton, backButton);
+            
+            // 新しいイベントリスナーを追加
+            newBackButton.addEventListener('click', function() {
+                // ダッシュボードに戻る
+                document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
+            });
+        }
+        
+    } catch (error) {
+        console.error('プロジェクト詳細表示エラー:', error);
+        alert('プロジェクト詳細の表示中にエラーが発生しました: ' + error.message);
+        // エラー時はダッシュボードに戻る
+        document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
+    }
+}
+
+// ステップフローバーの設定
+function setupStepFlow(project) {
+    const steps = document.querySelectorAll('.step-flow-bar .step');
+    
+    // 全てのステップをリセット
+    steps.forEach(step => {
+        step.classList.remove('active', 'completed');
+    });
+    
+    // プロジェクトの状態に応じてステップを設定
+    const infoStep = document.querySelector('.step[data-step="info"]');
+    const progressStep = document.querySelector('.step[data-step="progress"]');
+    const resultsStep = document.querySelector('.step[data-step="results"]');
+    const reportStep = document.querySelector('.step[data-step="report"]');
+    
+    if (infoStep) infoStep.classList.add('active');
+    
+    if (project.status === 'completed') {
+        // 完了済みの場合は全てのステップが完了
+        if (infoStep) infoStep.classList.add('completed');
+        if (progressStep) progressStep.classList.add('completed');
+        if (resultsStep) {
+            resultsStep.classList.add('completed');
+            resultsStep.classList.add('active');
+        }
+    } else if (project.status === 'running') {
+        // 実行中の場合は進捗ステップがアクティブ
+        if (infoStep) infoStep.classList.add('completed');
+        if (progressStep) {
+            progressStep.classList.add('active');
+        }
+    }
+    
+    // ステップクリックのイベントリスナーを設定
+    steps.forEach(step => {
+        // 既存のイベントリスナーを削除するためにクローン
+        const newStep = step.cloneNode(true);
+        step.parentNode.replaceChild(newStep, step);
+        
+        // 新しいイベントリスナーを追加
+        newStep.addEventListener('click', function() {
+            const targetStep = this.getAttribute('data-step');
+            showProjectTab(targetStep, project);
+        });
+    });
+}
+
+// プロジェクトタブを表示
+function showProjectTab(tabName, project) {
+    // すべてのタブコンテンツを非表示
+    const tabContents = document.querySelectorAll('.project-tab-content');
+    tabContents.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // すべてのステップから active クラスを削除
+    const steps = document.querySelectorAll('.step-flow-bar .step');
+    steps.forEach(step => {
+        step.classList.remove('active');
+    });
+    
+    // 選択されたステップに active クラスを追加
+    const selectedStep = document.querySelector(`.step[data-step="${tabName}"]`);
+    if (selectedStep) {
+        selectedStep.classList.add('active');
+    }
+    
+    // 選択されたタブを表示
+    const selectedTab = document.getElementById(`project-${tabName}-tab`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // タブ内容を更新
+    switch (tabName) {
+        case 'info':
+            displayProjectInfo(project);
+            break;
+        case 'progress':
+            displayProjectProgress(project);
+            break;
+        case 'results':
+            displayProjectResults(project);
+            break;
+        case 'report':
+            displayProjectReport(project);
+            break;
+    }
+}
+
+// プロジェクト情報タブの表示
+function displayProjectInfo(project) {
+    const infoContainer = document.querySelector('#project-info-tab .project-details-info');
+    if (!infoContainer) return;
+    
+    // スキャンオプションの整形
+    let scanOptions = '';
+    if (project.scan_options && Array.isArray(project.scan_options)) {
+        scanOptions = project.scan_options.join(', ');
+    }
+    
+    infoContainer.innerHTML = `
+        <div class="scan-status-banner ${project.status === 'completed' ? 'success' : ''}">
+            <i class="fas ${project.status === 'completed' ? 'fa-check-circle' : 'fa-spinner fa-spin'}"></i>
+            <span>${project.status === 'completed' ? 'スキャン完了' : getStatusText(project.status)}</span>
+        </div>
+        
+        <p><strong>対象URL:</strong> ${escapeHtml(project.target_url)}</p>
+        <p><strong>スキャンタイプ:</strong> ${getDisplayScanType(project.scan_type)}</p>
+        <p><strong>選択オプション:</strong> ${scanOptions || 'なし'}</p>
+        <p><strong>開始時間:</strong> ${new Date(project.created_at).toLocaleString()}</p>
+    `;
+    
+    // スキャン実行ボタンの状態を更新
+    const startScanBtn = document.getElementById('start-scan-btn');
+    if (startScanBtn) {
+        if (project.status === 'pending') {
+            startScanBtn.disabled = false;
+            startScanBtn.innerHTML = '<i class="fas fa-play"></i> スキャンを実行';
+            
+            // イベントリスナーを再設定
+            const newStartScanBtn = startScanBtn.cloneNode(true);
+            startScanBtn.parentNode.replaceChild(newStartScanBtn, startScanBtn);
+            
+            newStartScanBtn.addEventListener('click', function() {
+                startProjectScan(project.id);
+            });
+        } else {
+            startScanBtn.disabled = true;
+            if (project.status === 'completed') {
+                startScanBtn.innerHTML = '<i class="fas fa-check-circle"></i> スキャン完了';
+                startScanBtn.classList.add('btn-completed');
+            } else if (project.status === 'running') {
+                startScanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> スキャン実行中...';
+            } else if (project.status === 'failed') {
+                startScanBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> スキャン失敗';
+                startScanBtn.classList.add('btn-failed');
+            } else if (project.status === 'cancelled') {
+                startScanBtn.innerHTML = '<i class="fas fa-ban"></i> キャンセル済み';
+                startScanBtn.classList.add('btn-cancelled');
+            }
+        }
+    }
+}
+
+// スキャンタイプの表示名を取得
+function getDisplayScanType(type) {
+    switch (type) {
+        case 'quick': return 'クイックスキャン';
+        case 'full': return 'フルスキャン';
+        case 'custom': return 'カスタムスキャン';
+        default: return type;
+    }
+}
+
+// プロジェクトスキャンの開始
+async function startProjectScan(projectId) {
+    try {
+        // スキャン開始のUI更新
+        const startScanBtn = document.getElementById('start-scan-btn');
+        if (startScanBtn) {
+            startScanBtn.disabled = true;
+            startScanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> スキャン開始中...';
+        }
+        
+        // プロジェクトのステータスを更新
+        const { error } = await supabase
+            .from('projects')
+            .update({ 
+                status: 'running', 
+                progress: 0,
+                started_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', projectId);
+        
+        if (error) throw error;
+        
+        console.log('プロジェクトスキャンを開始しました:', projectId);
+        
+        // プロジェクト情報を再取得して表示を更新
+        const { data: updatedProject } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('id', projectId)
+            .single();
+        
+        if (updatedProject) {
+            // 進捗タブに自動的に移動
+            showProjectTab('progress', updatedProject);
+        }
+        
+        // 模擬的なスキャン進捗の更新（実際の実装では、バックエンドからの更新を受け取る）
+        simulateProgress(projectId);
+        
+    } catch (error) {
+        console.error('スキャン開始エラー:', error);
+        alert('スキャンの開始中にエラーが発生しました: ' + error.message);
+        
+        // エラー状態を表示
+        const startScanBtn = document.getElementById('start-scan-btn');
+        if (startScanBtn) {
+            startScanBtn.disabled = false;
+            startScanBtn.innerHTML = '<i class="fas fa-exclamation-circle"></i> スキャンに失敗しました。再試行';
+        }
+    }
+}
+
+// 模擬的な進捗更新（デモ用）
+function simulateProgress(projectId) {
+    let progress = 0;
+    const interval = setInterval(async () => {
+        progress += Math.floor(Math.random() * 5) + 1; // 1-5%ずつ増加
+        
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            
+            // 完了状態に更新
+            try {
+                await supabase
+                    .from('projects')
+                    .update({ 
+                        status: 'completed', 
+                        progress: 100,
+                        completed_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                console.log('プロジェクトスキャンが完了しました:', projectId);
+                
+                // プロジェクト情報を再取得して表示を更新
+                const { data: completedProject } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (completedProject) {
+                    // 結果タブに自動的に移動
+                    showProjectTab('results', completedProject);
+                }
+                
+            } catch (error) {
+                console.error('スキャン完了の更新エラー:', error);
+            }
+        } else {
+            // 進捗状態を更新
+            try {
+                await supabase
+                    .from('projects')
+                    .update({ 
+                        progress: progress,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', projectId);
+                
+                // 進捗表示を更新
+                updateProgressDisplay(projectId, progress);
+                
+            } catch (error) {
+                console.error('進捗更新エラー:', error);
+            }
+        }
+    }, 1000); // 1秒ごとに更新
+}
+
+// 進捗表示の更新
+async function updateProgressDisplay(projectId, progress) {
+    // 現在のプロジェクト情報を再取得
+    const { data: project } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .single();
+    
+    if (project) {
+        // 進捗タブが表示されている場合のみ更新
+        const progressTab = document.getElementById('project-progress-tab');
+        if (progressTab && progressTab.classList.contains('active')) {
+            displayProjectProgress(project);
+        }
+    }
+}
+
+// 進捗状況タブの表示
+function displayProjectProgress(project) {
+    const progressTab = document.getElementById('project-progress-tab');
+    if (!progressTab) return;
+    
+    // 進捗状況の表示を更新
+    const progressValue = project.progress || 0;
+    
+    progressTab.innerHTML = `
+        <div class="progress-status">
+            <h3>スキャン進捗状況</h3>
+            <div class="detail-progress">
+                <div class="progress-bar-large">
+                    <div class="progress-fill" style="width: ${progressValue}%;"></div>
+                </div>
+                <div class="progress-percentage">${progressValue}%</div>
+            </div>
+            
+            <div class="status-info">
+                <p><strong>ステータス:</strong> ${getStatusText(project.status)}</p>
+                <p><strong>開始時間:</strong> ${new Date(project.started_at || project.created_at).toLocaleString()}</p>
+                <p><strong>予想残り時間:</strong> ${getEstimatedTimeRemaining(project)}</p>
+            </div>
+            
+            <div class="scan-log">
+                <h4>スキャンログ</h4>
+                <div class="log-container">
+                    <div class="log-entry">スキャン初期化中...</div>
+                    ${progressValue > 10 ? '<div class="log-entry">ターゲットURL解析中...</div>' : ''}
+                    ${progressValue > 20 ? '<div class="log-entry">エンドポイント検出中...</div>' : ''}
+                    ${progressValue > 30 ? '<div class="log-entry">XSS脆弱性スキャン実行中...</div>' : ''}
+                    ${progressValue > 50 ? '<div class="log-entry">SQLインジェクション脆弱性スキャン実行中...</div>' : ''}
+                    ${progressValue > 70 ? '<div class="log-entry">CSRF脆弱性スキャン実行中...</div>' : ''}
+                    ${progressValue > 90 ? '<div class="log-entry">結果の集計・分析中...</div>' : ''}
+                    ${progressValue === 100 ? '<div class="log-entry success">スキャン完了！</div>' : ''}
+                </div>
+            </div>
+        </div>
+        
+        ${project.status === 'running' ? `
+        <div class="scan-actions">
+            <button class="btn btn-cancel" data-project-id="${project.id}">スキャンを中止</button>
+        </div>
+        ` : ''}
+    `;
+    
+    // 中止ボタンのイベントリスナーを設定
+    const cancelButton = progressTab.querySelector('.btn-cancel');
+    if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+            cancelProject(this.getAttribute('data-project-id'));
+        });
+    }
+}
+
+// スキャン結果タブの表示
+function displayProjectResults(project) {
+    const resultsTab = document.getElementById('project-results-tab');
+    if (!resultsTab) return;
+    
+    // 結果がない場合の表示
+    if (!project.results || project.status !== 'completed') {
+        resultsTab.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>${project.status === 'running' ? 'スキャンが実行中です。完了までお待ちください。' : 'スキャン結果がありません。スキャンを実行してください。'}</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // 結果の集計
+    const results = typeof project.results === 'string' ? JSON.parse(project.results) : project.results;
+    
+    let highCount = 0;
+    let mediumCount = 0;
+    let lowCount = 0;
+    let infoCount = 0;
+    
+    if (Array.isArray(results)) {
+        results.forEach(result => {
+            if (result.severity === 'high') highCount++;
+            else if (result.severity === 'medium') mediumCount++;
+            else if (result.severity === 'low') lowCount++;
+            else if (result.severity === 'info') infoCount++;
+        });
+    }
+    
+    // 結果の表示
+    resultsTab.innerHTML = `
+        <div class="results-summary">
+            <h3>脆弱性の検出結果</h3>
+            
+            <div class="vulnerability-summary">
+                <div class="summary-item critical">
+                    <div class="count">${highCount}</div>
+                    <span>高リスク</span>
+                </div>
+                <div class="summary-item high">
+                    <div class="count">${mediumCount}</div>
+                    <span>中リスク</span>
+                </div>
+                <div class="summary-item medium">
+                    <div class="count">${lowCount}</div>
+                    <span>低リスク</span>
+                </div>
+                <div class="summary-item low">
+                    <div class="count">${infoCount}</div>
+                    <span>情報</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="vulnerability-list">
+            <h4>検出された脆弱性の詳細</h4>
+            ${Array.isArray(results) && results.length > 0 ? results.map(result => `
+                <div class="vulnerability-item severity-${result.severity}">
+                    <div class="vulnerability-header">
+                        <div class="vulnerability-title">${escapeHtml(result.type)} - ${escapeHtml(result.path || '')}</div>
+                        <div class="vulnerability-severity">${getSeverityText(result.severity)}</div>
+                    </div>
+                    <div class="vulnerability-details">
+                        <p>${escapeHtml(result.description)}</p>
+                        ${result.fixed ? '<p class="fixed-status"><i class="fas fa-check-circle"></i> 修正済み</p>' : ''}
+                    </div>
+                </div>
+            `).join('') : '<p class="no-vulnerabilities">脆弱性は検出されませんでした。</p>'}
+        </div>
+        
+        <div class="scan-actions">
+            <button class="btn btn-primary" onclick="showProjectTab('report', ${JSON.stringify(project)})">レポートを生成</button>
+        </div>
+    `;
+}
+
+// 重要度のテキストを取得
+function getSeverityText(severity) {
+    switch (severity) {
+        case 'high': return '高';
+        case 'medium': return '中';
+        case 'low': return '低';
+        case 'info': return '情報';
+        default: return severity;
+    }
+}
+
+// レポートタブの表示
+function displayProjectReport(project) {
+    const reportTab = document.getElementById('project-report-tab');
+    if (!reportTab) return;
+    
+    // 結果がない場合の表示
+    if (!project.results || project.status !== 'completed') {
+        reportTab.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>スキャン結果がありません。スキャンを完了させてから再度お試しください。</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // レポートの表示
+    reportTab.innerHTML = `
+        <div class="report-container">
+            <h3>セキュリティスキャンレポート</h3>
+            
+            <div class="report-actions">
+                <button class="btn btn-secondary" onclick="exportPDF('${project.id}')"><i class="fas fa-file-pdf"></i> PDFエクスポート</button>
+                <button class="btn btn-secondary" onclick="exportCSV('${project.id}')"><i class="fas fa-file-csv"></i> CSVエクスポート</button>
+            </div>
+            
+            <div class="report-preview">
+                ${generateReportHTML(project)}
+            </div>
+        </div>
+    `;
 }
 
 // プロジェクトをキャンセル
