@@ -1,0 +1,10 @@
+[site]
+bucket = "./frontend"
+entry-point = "frontend"
+
+[build]
+command = ""
+watch_dir = "frontend"
+
+[env.production]
+name = "fearlock-app" 
