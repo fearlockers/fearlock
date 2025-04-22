@@ -1,7 +1,8 @@
 import config from './config.js';
 
 // デバッグ情報を表示
-console.log('設定を読み込み中...', config);
+console.log('アプリケーション初期化中...');
+console.log('環境設定:', config);
 
 // パス修正用ヘルパー関数
 function getBasePath() {
@@ -59,18 +60,20 @@ if (loginForm) {
   });
 }
 
+// パスワード強度のチェック
 function checkPasswordStrength(password) {
     const minLength = 8;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumbers = /[0-9]/.test(password);
     const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    if (password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars) {
-        return true;
-    } else {
-        return false;
-    }
+    
+    if (password.length < minLength) return false;
+    if (!hasUpperCase || !hasLowerCase) return false;
+    if (!hasNumbers) return false;
+    if (!hasSpecialChars) return false;
+    
+    return true;
 }
 
 // 新規登録フォームのイベントリスナー（signup.htmlページで使用）
@@ -79,8 +82,8 @@ const signupForm = document.getElementById('signup-form');
 if (signupForm) {
     signupForm.addEventListener('submit', async function(event) {
         event.preventDefault();
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
         console.log('新規登録フォームが送信されました');
         console.log('Email:', email);

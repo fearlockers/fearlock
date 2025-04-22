@@ -1,6 +1,6 @@
 // Supabaseの設定
-const supabaseUrl = 'https://gvwvgukqpopfhrjtvscp.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2d3ZndWtxcG9wZmhyanR2c2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MzU2NjksImV4cCI6MjA2MDIxMTY2OX0.NjowVscyeXqsNwfXrYzwkO7ayxg9jJ97fEtpdlnavsE';
+const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // ユーザーのセッションをチェック
@@ -15,12 +15,6 @@ async function checkSession() {
         }
         
         console.log('セッションデータ:', data);
-
-        // セッションがある場合はローカルストレージにフラグを設定
-        if (data.session) {
-            localStorage.setItem('isLoggedIn', 'true');
-            console.log('ログイン状態をローカルストレージに保存しました');
-        }
         
         return data.session;
     } catch (e) {
@@ -35,26 +29,24 @@ async function initPage() {
         const currentPage = window.location.pathname.split('/').pop() || 'login.html';
         console.log('現在のページ:', currentPage);
         
-        // ダッシュボードページでローカルストレージのログイン状態を確認
-        const isLoggedInFromStorage = localStorage.getItem('isLoggedIn') === 'true';
-        console.log('ローカルストレージのログイン状態:', isLoggedInFromStorage);
-        
         const session = await checkSession();
         console.log('セッション状態:', session ? 'ログイン中' : '未ログイン');
 
-        // ダッシュボードページの場合、ローカルストレージのフラグも確認
+        // ダッシュボードページの場合、セッションをチェック
         if (currentPage === 'dashboard.html') {
-            if (!session && !isLoggedInFromStorage) {
+            if (!session) {
                 console.log('未ログインのため、ログインページへリダイレクト');
                 window.location.href = 'login.html';
                 return;
             } else {
-                console.log('ログイン済みまたはログイン直後のため、ダッシュボードを表示します');
-                // セッションがあればユーザー情報を表示
-                if (session) {
-                    displayUserInfo(session.user);
-                }
+                console.log('ログイン済みのため、ダッシュボードを表示します');
+                // ユーザー情報を表示
+                displayUserInfo(session.user);
             }
+        } else if ((currentPage === 'login.html' || currentPage === 'signup.html') && session) {
+            // ログインまたは新規登録ページにアクセスしたが、すでにログイン済みの場合
+            console.log('ログイン済みのため、ダッシュボードへリダイレクト');
+            window.location.href = 'dashboard.html';
         }
     } catch (e) {
         console.error('ページ初期化中にエラーが発生しました:', e);
@@ -71,10 +63,12 @@ function displayUserInfo(user) {
     console.log('表示するユーザー情報:', user);
 
     // ユーザーのメールアドレスを表示
-    const userEmailElement = document.getElementById('user-email');
-    if (userEmailElement) {
-        userEmailElement.textContent = user.email;
-    }
+    const userEmailElements = document.querySelectorAll('#user-email, #welcome-user-email');
+    userEmailElements.forEach(element => {
+        if (element) {
+            element.textContent = user.email;
+        }
+    });
 
     // ユーザーの詳細情報を表示
     const userDetailsElement = document.getElementById('user-details');
@@ -159,7 +153,7 @@ if (signupForm) {
                 }
             }
             
-            alert('登録が完了しました！メールを確認してアカウントを有効化してください。');
+            alert('登録が完了しました！ログインページに移動します。');
             window.location.href = 'login.html';
             
         } catch (error) {
@@ -189,14 +183,8 @@ if (loginForm) {
             }
             
             console.log('ログイン成功:', data);
-            // ログイン状態をローカルストレージに保存
-            localStorage.setItem('isLoggedIn', 'true');
-            console.log('ログイン状態をローカルストレージに保存しました');
-            // 遷移処理を強化
             console.log('ダッシュボードページに遷移します');
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 100);
+            window.location.href = 'dashboard.html';
             
         } catch (error) {
             console.error('ログイン中にエラーが発生しました:', error);
@@ -215,10 +203,6 @@ if (logoutBtn) {
             if (error) {
                 throw error;
             }
-            
-            // ログアウト時にローカルストレージをクリア
-            localStorage.removeItem('isLoggedIn');
-            console.log('ログイン状態をローカルストレージから削除しました');
             
             window.location.href = 'login.html';
             
