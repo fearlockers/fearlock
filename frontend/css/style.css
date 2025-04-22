@@ -247,60 +247,59 @@ body {
 
 .stats-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
 .stat-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 20px;
     display: flex;
     align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
 }
 
 .stat-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     margin-right: 15px;
-}
-
-.stat-icon i {
-    font-size: 24px;
-    color: #fff;
+    color: white;
+    font-size: 1.5rem;
 }
 
 .bg-blue {
-    background-color: #3b82f6;
+    background-color: #007bff;
 }
 
 .bg-red {
-    background-color: #ef4444;
+    background-color: #dc3545;
 }
 
 .bg-orange {
-    background-color: #f97316;
+    background-color: #fd7e14;
 }
 
 .bg-green {
-    background-color: #10b981;
+    background-color: #28a745;
 }
 
 .stat-info h3 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 5px;
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .stat-info p {
-    font-size: 14px;
-    color: #64748b;
+    font-size: 0.9rem;
+    margin: 5px 0 0;
+    color: #6c757d;
 }
 
 .user-info-box {
@@ -378,7 +377,38 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+}
+
+.section-header button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.loading-projects {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.loading-projects i {
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.no-projects {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px dashed #ddd;
 }
 
 /* プロジェクト詳細用のセクションヘッダー */
@@ -526,118 +556,137 @@ body {
 
 /* 進捗バー */
 .project-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 20px;
     margin-bottom: 15px;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease, transform 0.1s ease;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .project-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
 }
 
 .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+    background-color: #f8f9fa;
 }
 
 .project-title {
-    font-size: 18px;
-    font-weight: 600;
+    font-weight: bold;
+    font-size: 1.1rem;
 }
 
 .project-status {
-    font-size: 12px;
-    font-weight: 500;
-    padding: 5px 10px;
+    font-size: 0.8rem;
+    padding: 3px 8px;
     border-radius: 12px;
 }
 
-.project-status-banner {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
-
-.project-status-banner i {
-    margin-right: 10px;
-    font-size: 18px;
+.status-pending {
+    background-color: #e9ecef;
+    color: #495057;
 }
 
 .status-running {
-    background-color: #ebf5ff;
-    color: #3b82f6;
+    background-color: #cce5ff;
+    color: #004085;
 }
 
 .status-completed {
-    background-color: #dcfce7;
-    color: #10b981;
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-failed {
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
 .status-cancelled {
-    background-color: #fee2e2;
-    color: #ef4444;
+    background-color: #f8f9fa;
+    color: #6c757d;
 }
 
 .project-details {
-    display: flex;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #64748b;
+    padding: 10px 15px;
+    background-color: #fff;
+    font-size: 0.9rem;
 }
 
-.project-details > div {
-    margin-right: 20px;
-}
-
-.project-details i {
-    margin-right: 5px;
+.project-details div {
+    margin: 5px 0;
 }
 
 .progress-container {
-    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
 }
 
 .progress-bar {
     height: 8px;
-    background-color: #e2e8f0;
+    background-color: #e9ecef;
     border-radius: 4px;
+    margin-bottom: 5px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #3b82f6;
+    background-color: #007bff;
     border-radius: 4px;
-    transition: width 0.3s ease;
 }
 
 .progress-stats {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #6c757d;
 }
 
 .project-actions {
+    padding: 10px 15px;
+    border-top: 1px solid #e9ecef;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
 }
 
 .btn-sm {
-    padding: 5px 10px;
-    font-size: 12px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+}
+
+.btn-view-details {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-view-details:hover {
+    background-color: #5a6268;
+}
+
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
 }
 
 /* プロジェクト詳細ページのスタイル */
@@ -807,14 +856,6 @@ body {
     background-color: #0d9868;
 }
 
-.btn-cancel {
-    background-color: #ef4444;
-}
-
-.btn-cancel:hover {
-    background-color: #dc2626;
-}
-
 .disabled {
     opacity: 0.7;
     pointer-events: none;
@@ -917,4 +958,106 @@ body {
 
 .project-tab-content.active {
     display: block;
+}
+
+/* モーダルスタイル */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.modal-content {
+    padding: 15px;
+}
+
+/* 通知スタイル */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    padding: 12px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+.notification.info {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.notification.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.notification.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.notification.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
 } 
