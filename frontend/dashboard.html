@@ -718,9 +718,279 @@
         }
 
         // プロジェクト詳細を表示
-        function showProjectDetails(projectId) {
+        async function showProjectDetails(projectId) {
             console.log('プロジェクト詳細を表示:', projectId);
-            // ダッシュボードJSの実装を使用するため、ここでは何もしない
+            
+            try {
+                // プロジェクトデータを取得
+                const { data: project, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (error) {
+                    console.error('プロジェクト取得エラー:', error);
+                    throw error;
+                }
+                
+                if (!project) {
+                    throw new Error('プロジェクトが見つかりません');
+                }
+                
+                console.log('取得したプロジェクト詳細:', project);
+                
+                // プロジェクト詳細画面に切り替え
+                const sections = document.querySelectorAll('.content-section');
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                const projectSection = document.getElementById('project-section');
+                if (projectSection) {
+                    projectSection.classList.add('active');
+                }
+                
+                // プロジェクトタイトルを設定
+                const projectTitle = document.getElementById('project-title');
+                if (projectTitle) {
+                    projectTitle.textContent = project.name;
+                }
+                
+                // ダッシュボードヘッダーのタイトルを更新
+                const headerTitle = document.querySelector('.dashboard-header h1');
+                if (headerTitle) {
+                    headerTitle.textContent = 'プロジェクト詳細';
+                }
+                
+                // プロジェクト情報を表示
+                displayProjectInfo(project);
+                
+                // ダッシュボードに戻るボタンのイベントリスナーを設定
+                const backButton = document.getElementById('back-to-dashboard');
+                if (backButton) {
+                    // 既存のイベントリスナーを削除
+                    const newBackButton = backButton.cloneNode(true);
+                    backButton.parentNode.replaceChild(newBackButton, backButton);
+                    
+                    // 新しいイベントリスナーを追加
+                    newBackButton.addEventListener('click', function() {
+                        // ダッシュボードに戻る
+                        document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
+                    });
+                }
+                
+            } catch (error) {
+                console.error('プロジェクト詳細表示エラー:', error);
+                alert('プロジェクト詳細の表示中にエラーが発生しました: ' + error.message);
+                // エラー時はダッシュボードに戻る
+                document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
+            }
+        }
+        
+        // プロジェクト情報を表示
+        function displayProjectInfo(project) {
+            const infoContainer = document.querySelector('.project-details-info');
+            if (!infoContainer) return;
+            
+            const scanTypeDisplay = getScanTypeDisplay(project.scan_type);
+            const scanOptionsDisplay = getScanOptionsDisplay(project.scan_options);
+            
+            infoContainer.innerHTML = `
+                <div class="info-group">
+                    <div class="info-label">プロジェクト名:</div>
+                    <div class="info-value">${escapeHtml(project.name)}</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">対象URL:</div>
+                    <div class="info-value"><a href="${escapeHtml(project.target_url)}" target="_blank">${escapeHtml(project.target_url)}</a></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">ステータス:</div>
+                    <div class="info-value"><span class="status-badge ${getStatusClass(project.status)}">${getStatusText(project.status)}</span></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">作成日時:</div>
+                    <div class="info-value">${new Date(project.created_at).toLocaleString()}</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">スキャンタイプ:</div>
+                    <div class="info-value">${scanTypeDisplay}</div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">スキャンオプション:</div>
+                    <div class="info-value">${scanOptionsDisplay}</div>
+                </div>
+            `;
+            
+            // スキャン開始ボタンの状態を設定
+            const startScanBtn = document.getElementById('start-scan-btn');
+            if (startScanBtn) {
+                if (project.status === 'pending') {
+                    startScanBtn.disabled = false;
+                    startScanBtn.innerHTML = '<i class="fas fa-play"></i> スキャンを実行';
+                    
+                    // イベントリスナーを設定
+                    startScanBtn.onclick = async function() {
+                        await startProjectScan(project.id);
+                    };
+                } else {
+                    startScanBtn.disabled = true;
+                    startScanBtn.innerHTML = '<i class="fas fa-check"></i> スキャン実行済み';
+                }
+            }
+        }
+        
+        // スキャンタイプの表示テキストを取得
+        function getScanTypeDisplay(type) {
+            switch(type) {
+                case 'quick': return 'クイックスキャン';
+                case 'full': return 'フルスキャン';
+                case 'custom': return 'カスタムスキャン';
+                default: return type || '不明';
+            }
+        }
+        
+        // スキャンオプションの表示テキストを取得
+        function getScanOptionsDisplay(options) {
+            if (!options || !Array.isArray(options) || options.length === 0) {
+                return 'なし';
+            }
+            
+            const optionMap = {
+                'xss': 'XSS検査',
+                'sqli': 'SQLインジェクション検査',
+                'csrf': 'CSRF検査',
+                'openredirect': 'オープンリダイレクト検査'
+            };
+            
+            return options.map(opt => optionMap[opt] || opt).join('、');
+        }
+
+        // プロジェクトスキャンを開始
+        async function startProjectScan(projectId) {
+            try {
+                console.log('プロジェクトスキャンを開始します:', projectId);
+                
+                // スキャン開始ボタンを無効化
+                const startScanBtn = document.getElementById('start-scan-btn');
+                if (startScanBtn) {
+                    startScanBtn.disabled = true;
+                    startScanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> スキャン開始中...';
+                }
+                
+                // プロジェクトのステータスを更新
+                const { error } = await supabase
+                    .from('projects')
+                    .update({ 
+                        status: 'running', 
+                        updated_at: new Date().toISOString(),
+                        progress: 5 // 初期進捗5%
+                    })
+                    .eq('id', projectId);
+                
+                if (error) {
+                    throw new Error('スキャン開始エラー: ' + error.message);
+                }
+                
+                console.log('スキャンが正常に開始されました');
+                
+                // 画面を進捗タブに切り替え
+                const { data: project } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+                
+                if (project) {
+                    // 進捗表示を開始
+                    simulateProgress(projectId);
+                }
+                
+            } catch (error) {
+                console.error('スキャン開始中にエラーが発生しました:', error);
+                alert('スキャン開始に失敗しました: ' + error.message);
+                
+                // スキャン開始ボタンを元に戻す
+                const startScanBtn = document.getElementById('start-scan-btn');
+                if (startScanBtn) {
+                    startScanBtn.disabled = false;
+                    startScanBtn.innerHTML = '<i class="fas fa-play"></i> スキャンを実行';
+                }
+            }
+        }
+        
+        // 進捗シミュレーション（実際はバックエンドからの更新を受け取るべき）
+        function simulateProgress(projectId) {
+            console.log('進捗シミュレーションを開始します', projectId);
+            
+            let progress = 5;
+            const interval = setInterval(async () => {
+                progress += Math.floor(Math.random() * 10) + 1;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // プロジェクトを完了状態に設定
+                    await supabase
+                        .from('projects')
+                        .update({ 
+                            status: 'completed', 
+                            updated_at: new Date().toISOString(),
+                            progress: 100
+                        })
+                        .eq('id', projectId);
+                    
+                    console.log('スキャンが完了しました');
+                } else {
+                    // 進捗のみ更新
+                    await supabase
+                        .from('projects')
+                        .update({ 
+                            progress: progress,
+                            updated_at: new Date().toISOString() 
+                        })
+                        .eq('id', projectId);
+                }
+                
+                // 画面の進捗表示を更新
+                updateProgressDisplay(projectId, progress);
+                
+            }, 3000); // 3秒ごとに更新
+        }
+        
+        // 進捗表示の更新
+        async function updateProgressDisplay(projectId, progress) {
+            console.log(`プロジェクト ${projectId} の進捗を更新: ${progress}%`);
+            
+            // プロジェクト情報を再取得
+            const { data: project } = await supabase
+                .from('projects')
+                .select('*')
+                .eq('id', projectId)
+                .single();
+            
+            if (project) {
+                // 進捗表示を更新
+                const progressBar = document.querySelector('.project-progress-bar .progress-fill');
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                }
+                
+                const progressText = document.querySelector('.project-progress-percentage');
+                if (progressText) {
+                    progressText.textContent = `${progress}%`;
+                }
+                
+                // ステータスが変わった場合は表示を更新
+                if (project.status === 'completed' && progress === 100) {
+                    const statusElement = document.querySelector('.project-progress-status');
+                    if (statusElement) {
+                        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> スキャンが完了しました';
+                        statusElement.className = 'project-progress-status completed';
+                    }
+                }
+            }
         }
 
         // プロジェクトをキャンセル
