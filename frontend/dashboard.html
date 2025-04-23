@@ -335,17 +335,22 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+    <script type="module">
+        // config.jsから設定をインポート
+        import config from './config.js';
+        
         // Supabaseの設定
-        const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
+        const supabaseUrl = config.supabaseUrl;
+        const supabaseKey = config.supabaseKey;
+        
+        console.log('Using Supabase URL:', supabaseUrl);
         
         // Cookie関連のヘルパー関数
         function setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "; expires=" + date.toUTCString();
-            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Strict";
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
         }
 
         function getCookie(name) {
@@ -362,7 +367,7 @@
         }
 
         function removeCookie(name) {
-            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
         }
         
         // Supabaseクライアントの初期化（Cookieストレージ使用）
@@ -374,12 +379,16 @@
                 storageKey: 'sb-session-cookie',
                 storage: {
                     getItem: (key) => {
-                        return getCookie(key);
+                        const value = getCookie(key);
+                        console.log('Getting cookie:', key, value ? 'exists' : 'not found');
+                        return value;
                     },
                     setItem: (key, value) => {
+                        console.log('Setting cookie:', key);
                         setCookie(key, value, 7); // 7日間有効なCookie
                     },
                     removeItem: (key) => {
+                        console.log('Removing cookie:', key);
                         removeCookie(key);
                     }
                 }

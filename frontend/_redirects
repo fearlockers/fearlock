@@ -1,5 +1,5 @@
-# SPA向けのフォールバック設定
+# SPAルーティング用のフォールバック設定
 /*    /index.html   200
 
-# APIリクエストをCloudflare Workersにリダイレクト
-/api/*  https://fearlock-api.yourusername.workers.dev/:splat  200 
+# APIリクエスト用のリダイレクトルール
+/api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200 
