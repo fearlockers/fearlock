@@ -1,16 +1,21 @@
-# SPAルーティング用のフォールバック設定
-/index.html    /    301
-/dashboard    /dashboard.html    200
-/login    /login.html    200
-/signup    /signup.html    200
-
-# アセットのリダイレクト
+# 静的ファイルへの直接アクセスを許可
 /style.css    /style.css    200
 /js/*    /js/:splat    200
 /css/*    /css/:splat    200
 
+# HTMLファイルへの直接アクセス
+/login.html    /login.html    200
+/signup.html    /signup.html    200
+/dashboard.html    /dashboard.html    200
+/index.html    /index.html    200
+
+# 短縮URLのリダイレクト
+/login    /login.html    301
+/signup    /signup.html    301
+/dashboard    /dashboard.html    301
+
 # APIリクエスト用のリダイレクトルール
 /api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200
 
-# その他のルートはすべてトップページへ
-/*    /index.html   200 
+# その他のルートはすべてインデックスへ
+/*    /index.html    200 
