@@ -6,6 +6,14 @@
     <title>Fearlock - セキュリティ脆弱性診断ツール</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
         /* ヘッダースタイル */
         .header {
             display: flex;
@@ -15,6 +23,11 @@
             background-color: #273c75;
             color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
         .logo {
@@ -32,11 +45,13 @@
         }
 
         .header-btn {
-            padding: 8px 20px;
+            padding: 10px 24px;
             border-radius: 4px;
             font-weight: bold;
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: 16px;
+            cursor: pointer;
         }
 
         .login-btn {
@@ -64,13 +79,14 @@
         .hero {
             background: linear-gradient(135deg, #273c75 0%, #192a56 100%);
             color: white;
-            padding: 80px 30px;
+            padding: 120px 30px 80px;
             text-align: center;
         }
 
         .hero h1 {
             font-size: 48px;
             margin-bottom: 20px;
+            line-height: 1.3;
         }
 
         .hero p {
@@ -84,12 +100,13 @@
             display: inline-block;
             background-color: #4cd137;
             color: white;
-            padding: 12px 30px;
+            padding: 15px 36px;
             border-radius: 4px;
             font-size: 18px;
             font-weight: bold;
             text-decoration: none;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .cta-button:hover {
@@ -126,6 +143,10 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             text-align: center;
             transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
 
         .feature-card:hover {
@@ -163,12 +184,16 @@
         }
 
         @media (max-width: 768px) {
+            .hero {
+                padding-top: 150px;
+            }
+            
             .hero h1 {
-                font-size: 36px;
+                font-size: 32px;
             }
             
             .hero p {
-                font-size: 18px;
+                font-size: 16px;
             }
             
             .features-grid {
@@ -177,7 +202,12 @@
             
             .header {
                 flex-direction: column;
+                padding: 15px;
                 gap: 15px;
+            }
+            
+            .feature-card {
+                height: auto;
             }
         }
     </style>
@@ -187,8 +217,8 @@
     <header class="header">
         <div class="logo">FEAR<span>LOCK</span></div>
         <div class="header-buttons">
-            <a href="login.html" class="header-btn login-btn">ログイン</a>
-            <a href="signup.html" class="header-btn signup-btn">新規登録</a>
+            <a href="/login.html" class="header-btn login-btn">ログイン</a>
+            <a href="/signup.html" class="header-btn signup-btn">新規登録</a>
         </div>
     </header>
 
@@ -196,7 +226,7 @@
     <section class="hero">
         <h1>安全なウェブサイトを<br>確保するための最適ツール</h1>
         <p>FEARLOCKはウェブサイトの脆弱性を素早く特定し、サイバー攻撃からあなたのサイトを守るための包括的なセキュリティ診断ツールです。</p>
-        <a href="signup.html" class="cta-button">今すぐ始める</a>
+        <a href="/signup.html" class="cta-button">今すぐ始める</a>
     </section>
 
     <!-- 特徴セクション -->
@@ -232,6 +262,17 @@
         if (window.location.pathname.includes('index.html')) {
             window.location.href = '/';
         }
+        
+        // リンクのクリックイベントを監視
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // リンクがページ内にあるかどうかを確認
+                const href = this.getAttribute('href');
+                if (href.startsWith('/') && !href.startsWith('//')) {
+                    console.log('内部リンクがクリックされました:', href);
+                }
+            });
+        });
     </script>
 </body>
 </html> 

@@ -4,6 +4,11 @@
 /login    /login.html    200
 /signup    /signup.html    200
 
+# アセットのリダイレクト
+/style.css    /style.css    200
+/js/*    /js/:splat    200
+/css/*    /css/:splat    200
+
 # APIリクエスト用のリダイレクトルール
 /api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200
 
