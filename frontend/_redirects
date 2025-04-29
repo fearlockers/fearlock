@@ -1,21 +1,18 @@
-# 静的ファイルへの直接アクセスを許可
-/style.css    /style.css    200
+# 静的アセットは直接アクセス
+/*.css    /:splat    200
+/*.js    /:splat    200
 /js/*    /js/:splat    200
 /css/*    /css/:splat    200
+/images/*    /images/:splat    200
 
-# HTMLファイルへの直接アクセス
+# APIリクエスト
+/api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200
+
+# HTMLファイル
 /login.html    /login.html    200
 /signup.html    /signup.html    200
 /dashboard.html    /dashboard.html    200
 /index.html    /index.html    200
 
-# 短縮URLのリダイレクト
-/login    /login.html    301
-/signup    /signup.html    301
-/dashboard    /dashboard.html    301
-
-# APIリクエスト用のリダイレクトルール
-/api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200
-
-# その他のルートはすべてインデックスへ
+# すべてのリクエストはindex.htmlにフォールバック
 /*    /index.html    200 

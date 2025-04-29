@@ -258,21 +258,8 @@
     </footer>
 
     <script>
-        // 他のページからindex.htmlに来た場合はルートページにリダイレクト
-        if (window.location.pathname.includes('index.html')) {
-            window.location.href = '/';
-        }
-        
-        // リンクのクリックイベントを監視
-        document.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                // リンクがページ内にあるかどうかを確認
-                const href = this.getAttribute('href');
-                if (href.startsWith('/') && !href.startsWith('//')) {
-                    console.log('内部リンクがクリックされました:', href);
-                }
-            });
-        });
+        // リダイレクト関連のコードを削除してシンプルにする
+        console.log('ページが読み込まれました:', window.location.pathname);
     </script>
 </body>
 </html> 
