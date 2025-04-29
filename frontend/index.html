@@ -1,92 +1,237 @@
-  <script>
-    // Supabase初期化
-    const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
-    
-    // Cookie関連のヘルパー関数
-    function setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        const expires = "; expires=" + date.toUTCString();
-        document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Strict";
-    }
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fearlock - セキュリティ脆弱性診断ツール</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ヘッダースタイル */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #273c75;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-    function getCookie(name) {
-        const nameEQ = name + "=";
-        const ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) {
-                return decodeURIComponent(c.substring(nameEQ.length, c.length));
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #4cd137;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .login-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .signup-btn {
+            background-color: #4cd137;
+            border: 2px solid #4cd137;
+            color: white;
+        }
+
+        .signup-btn:hover {
+            background-color: #44bd32;
+            border-color: #44bd32;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            background: linear-gradient(135deg, #273c75 0%, #192a56 100%);
+            color: white;
+            padding: 80px 30px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #4cd137;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #44bd32;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 特徴セクション */
+        .features {
+            padding: 80px 30px;
+            background-color: #f9f9f9;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 60px;
+            color: #273c75;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            color: #4cd137;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            color: #273c75;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* フッター */
+        .footer {
+            background-color: #273c75;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
             }
         }
-        return null;
-    }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="logo">FEAR<span>LOCK</span></div>
+        <div class="header-buttons">
+            <a href="login.html" class="header-btn login-btn">ログイン</a>
+            <a href="signup.html" class="header-btn signup-btn">新規登録</a>
+        </div>
+    </header>
 
-    function removeCookie(name) {
-        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Strict';
-    }
-    
-    // Supabaseクライアントの初期化（Cookieストレージ使用）
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-        auth: {
-            persistSession: true,
-            autoRefreshToken: true,
-            detectSessionInUrl: false,
-            storageKey: 'sb-session-cookie',
-            storage: {
-                getItem: (key) => {
-                    return getCookie(key);
-                },
-                setItem: (key, value) => {
-                    setCookie(key, value, 7); // 7日間有効なCookie
-                },
-                removeItem: (key) => {
-                    removeCookie(key);
-                }
-            }
+    <!-- ヒーローセクション -->
+    <section class="hero">
+        <h1>安全なウェブサイトを<br>確保するための最適ツール</h1>
+        <p>FEARLOCKはウェブサイトの脆弱性を素早く特定し、サイバー攻撃からあなたのサイトを守るための包括的なセキュリティ診断ツールです。</p>
+        <a href="signup.html" class="cta-button">今すぐ始める</a>
+    </section>
+
+    <!-- 特徴セクション -->
+    <section class="features">
+        <h2 class="section-title">主な機能</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">包括的なスキャン</h3>
+                <p class="feature-desc">XSS、SQLインジェクション、CSRF、その他多数の脆弱性を素早く検出します。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">詳細レポート</h3>
+                <p class="feature-desc">検出された脆弱性の重要度、影響、修正方法を含む包括的なレポートを生成します。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">高速スキャン</h3>
+                <p class="feature-desc">大規模サイトでも短時間で効率的なスキャンを実行し、迅速な結果を提供します。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="logo">FEAR<span>LOCK</span></div>
+        <p>© 2025 FEARLOCK. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // 他のページからindex.htmlに来た場合はルートページにリダイレクト
+        if (window.location.pathname.includes('index.html')) {
+            window.location.href = '/';
         }
-    });
-
-    // ページ読み込み時に既存のセッションをチェック
-    document.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session) {
-        // 既にログイン済みの場合はダッシュボードへリダイレクト
-        window.location.href = 'dashboard.html';
-      }
-    });
-
-    // ログインフォームのイベントリスナー
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const status = document.getElementById('status');
-      status.textContent = 'ログイン中...';
-      status.className = 'message';
-
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-        if (error) {
-          status.textContent = 'ログイン失敗: ' + error.message;
-          status.className = 'message error';
-        } else {
-          status.textContent = 'ログイン成功！リダイレクト中...';
-          status.className = 'message success';
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1000);
-        }
-      } catch (err) {
-        status.textContent = 'エラーが発生しました: ' + err.message;
-        status.className = 'message error';
-      }
-    });
-  </script> 
+    </script>
+</body>
+</html> 

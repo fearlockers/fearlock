@@ -1,5 +1,11 @@
 # SPAルーティング用のフォールバック設定
-/*    /index.html   200
+/index.html    /    301
+/dashboard    /dashboard.html    200
+/login    /login.html    200
+/signup    /signup.html    200
 
 # APIリクエスト用のリダイレクトルール
-/api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200 
+/api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200
+
+# その他のルートはすべてトップページへ
+/*    /index.html   200 
