@@ -3,61 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FEARLOCK - 新規登録</title>
+    <title>FEARLOCK - 標準新規登録</title>
     <link rel="stylesheet" href="style.css">
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-    <div class="rapid7-login-container">
-        <div class="rapid7-login-form">
-            <div class="rapid7-login-form-inner">
-                <img src="images/rapid7-logo.png" alt="FEARLOCK" class="rapid7-logo">
-                <h2 class="rapid7-login-title">Create an account</h2>
-                <form id="signup-form">
-                    <div class="rapid7-form-group">
-                        <label for="email" class="rapid7-form-label">Business Email</label>
-                        <input type="email" id="email" class="rapid7-form-input" required>
-                    </div>
-                    <div class="rapid7-form-group">
-                        <label for="password" class="rapid7-form-label">Password</label>
-                        <input type="password" id="password" class="rapid7-form-input" required>
-                        <p class="password-hint">8文字以上の大文字、小文字、数字、特殊文字を含めてください</p>
-                    </div>
-                    <div class="rapid7-form-group">
-                        <label for="password-confirm" class="rapid7-form-label">Confirm Password</label>
-                        <input type="password" id="password-confirm" class="rapid7-form-input" required>
-                    </div>
-                    <div class="rapid7-form-group">
-                        <button type="submit" id="signup-button" class="rapid7-btn rapid7-btn-primary">Create Account</button>
-                    </div>
-                </form>
-                <div class="rapid7-divider"><span>or</span></div>
-                <div class="rapid7-links">
-                    <p>Already have an account? <a href="login.html">Sign in</a></p>
-                </div>
-                <div id="signup-status" class="status-message"></div>
-                <div class="rapid7-footer">
-                    <span>© 2025 FEARLOCK</span>
-                    <div>
-                        <a href="#blog">Blog</a>
-                        <a href="#docs">Docs</a>
-                        <a href="#support">Support</a>
-                        <a href="#extensions">Extensions</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="rapid7-banner">
-            <h1>SECURE YOUR APPLICATIONS FASTER</h1>
-            <p>Our all-in-one security platform makes it easy to find and fix vulnerabilities across your entire attack surface.</p>
-            <a href="#learn-more" class="rapid7-banner-cta">Learn More</a>
-        </div>
+    <div class="login-container">
+        <h2>新規登録</h2>
+        <form id="signup-form">
+            <input type="email" id="email" placeholder="メールアドレス" required>
+            <input type="password" id="password" placeholder="パスワード" required>
+            <input type="password" id="password-confirm" placeholder="パスワード確認" required>
+            <p class="password-hint">8文字以上の大文字、小文字、数字、特殊文字を含めてください</p>
+            <button type="submit" id="signup-button">登録する</button>
+        </form>
+        <p>すでにアカウントをお持ちの方は<a href="login.html">ログイン</a>してください。</p>
+        <p><a href="signup.html">Rapid7スタイル登録に戻る</a></p>
+        <div id="signup-status" class="status-message"></div>
     </div>
     <script>
         // Supabaseの設定
         const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
+        
+        console.log('Using Supabase URL:', supabaseUrl);
         
         // Cookie関連のヘルパー関数
         function setCookie(name, value, days) {
@@ -118,6 +88,11 @@
             console.log(isError ? 'エラー: ' : 'ステータス: ', message);
         }
 
+        // エラーハンドリング
+        window.addEventListener('error', function(event) {
+            updateStatus('JavaScriptエラー: ' + event.message, true);
+        });
+
         // パスワード強度の確認
         function checkPasswordStrength(password) {
             if (password.length < 8) {
@@ -176,7 +151,7 @@
             
             const signupButton = document.getElementById('signup-button');
             signupButton.disabled = true;
-            signupButton.textContent = 'Creating account...';
+            signupButton.textContent = '登録中...';
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -222,7 +197,7 @@
                 updateStatus(`登録に失敗しました: ${error.message}`, true);
             } finally {
                 signupButton.disabled = false;
-                signupButton.textContent = 'Create Account';
+                signupButton.textContent = '登録';
             }
         });
     </script>

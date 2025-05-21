@@ -3,29 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン</title>
+    <title>FEARLOCK - ログイン</title>
     <link rel="stylesheet" href="style.css">
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-    <div class="login-container">
-        <h2>ログイン</h2>
-        <form id="login-form">
-            <input type="email" id="email" placeholder="メールアドレス" required>
-            <input type="password" id="password" placeholder="パスワード" required>
-            <button type="submit" id="login-button">ログイン</button>
-        </form>
-        <p>アカウントをお持ちでない方は<a href="signup.html">新規登録</a>してください。</p>
-        <div id="login-status" class="status-message"></div>
+    <div class="rapid7-login-container">
+        <div class="rapid7-login-form">
+            <div class="rapid7-login-form-inner">
+                <img src="images/rapid7-logo.png" alt="FEARLOCK" class="rapid7-logo">
+                <h2 class="rapid7-login-title">Customer Sign-in</h2>
+                <form id="login-form">
+                    <div class="rapid7-form-group">
+                        <label for="email" class="rapid7-form-label">Email</label>
+                        <input type="email" id="email" class="rapid7-form-input" required>
+                    </div>
+                    <div class="rapid7-form-group">
+                        <button type="submit" id="login-button" class="rapid7-btn rapid7-btn-primary">Next</button>
+                    </div>
+                </form>
+                <div class="rapid7-divider"><span>or</span></div>
+                <button class="rapid7-btn rapid7-btn-secondary" id="standard-login-btn">Back to standard login</button>
+                <div class="rapid7-links">
+                    <p><a href="#" id="reset-password">Reset my password</a></p>
+                    <p><a href="#" id="activate-account">Activate my account</a></p>
+                    <p><a href="#" id="help-sso">Help with SSO</a></p>
+                    <p><a href="signup.html">Not a customer? Try for free</a></p>
+                </div>
+                <div id="login-status" class="status-message"></div>
+                <div class="rapid7-footer">
+                    <span>© 2025 FEARLOCK</span>
+                    <div>
+                        <a href="#blog">Blog</a>
+                        <a href="#docs">Docs</a>
+                        <a href="#support">Support</a>
+                        <a href="#extensions">Extensions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rapid7-banner">
+            <h1>SEE WHAT HACKERS SEE</h1>
+            <p>Blind spots in your attack surface create prime opportunities for adversaries. That's why we're offering you exclusive access to Surface Command, our attack surface management solution.</p>
+            <a href="signup.html" class="rapid7-banner-cta">Start Trial</a>
+        </div>
     </div>
 
     <script>
         // Supabaseの設定
         const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
-        
-        console.log('Using Supabase URL:', supabaseUrl);
         
         // Cookie関連のヘルパー関数
         function setCookie(name, value, days) {
@@ -86,11 +114,6 @@
             console.log(isError ? 'エラー: ' : 'ステータス: ', message);
         }
 
-        // エラーハンドリング
-        window.addEventListener('error', function(event) {
-            updateStatus('JavaScriptエラー: ' + event.message, true);
-        });
-
         // すでにログイン済みの場合はダッシュボードへ
         async function checkAndRedirect() {
             try {
@@ -115,44 +138,109 @@
         // ページ読み込み時にセッションチェック
         document.addEventListener('DOMContentLoaded', checkAndRedirect);
 
-        // ログインフォームの処理
+        // ログインフォームの処理 - Rapid7スタイルでは2段階認証
+        let userEmail = '';
+
         document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const loginButton = document.getElementById('login-button');
             loginButton.disabled = true;
-            loginButton.textContent = 'ログイン中...';
+            loginButton.textContent = 'Processing...';
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            userEmail = document.getElementById('email').value;
             
             try {
-                updateStatus('ログイン処理中...', false);
-                console.log('ログイン試行中...', email);
-                
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password,
-                });
-                
-                if (error) {
-                    throw error;
+                if (!userEmail) {
+                    throw new Error('メールアドレスを入力してください');
                 }
                 
-                console.log('ログイン成功:', data);
-                updateStatus('ログイン成功！リダイレクト中...', false);
+                // フォームを変更してパスワード入力フォームを表示
+                const form = document.getElementById('login-form');
+                form.innerHTML = `
+                    <div class="rapid7-form-group">
+                        <label for="email" class="rapid7-form-label">Email</label>
+                        <input type="email" id="email" class="rapid7-form-input" value="${userEmail}" disabled>
+                    </div>
+                    <div class="rapid7-form-group">
+                        <label for="password" class="rapid7-form-label">Password</label>
+                        <input type="password" id="password" class="rapid7-form-input" required autofocus>
+                    </div>
+                    <div class="rapid7-form-group">
+                        <button type="submit" id="login-button" class="rapid7-btn rapid7-btn-primary">Sign In</button>
+                    </div>
+                `;
                 
-                // 短いタイムアウト後にリダイレクト（画面の更新を確認できるように）
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
+                // イベントリスナーを更新
+                form.removeEventListener('submit', this);
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    
+                    const loginButton = document.getElementById('login-button');
+                    loginButton.disabled = true;
+                    loginButton.textContent = 'Signing in...';
+                    
+                    const password = document.getElementById('password').value;
+                    
+                    try {
+                        updateStatus('ログイン処理中...', false);
+                        console.log('ログイン試行中...', userEmail);
+                        
+                        const { data, error } = await supabase.auth.signInWithPassword({
+                            email: userEmail,
+                            password: password,
+                        });
+                        
+                        if (error) {
+                            throw error;
+                        }
+                        
+                        console.log('ログイン成功:', data);
+                        updateStatus('ログイン成功！リダイレクト中...', false);
+                        
+                        // 短いタイムアウト後にリダイレクト（画面の更新を確認できるように）
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                        
+                    } catch (error) {
+                        console.error('ログイン中にエラーが発生しました:', error);
+                        updateStatus(`ログインに失敗しました: ${error.message}`, true);
+                        loginButton.disabled = false;
+                        loginButton.textContent = 'Sign In';
+                    }
+                });
+                
+                loginButton.disabled = false;
+                loginButton.textContent = 'Next';
                 
             } catch (error) {
-                console.error('ログイン中にエラーが発生しました:', error);
-                updateStatus(`ログインに失敗しました: ${error.message}`, true);
+                console.error('メールアドレス処理中にエラーが発生しました:', error);
+                updateStatus(`エラー: ${error.message}`, true);
                 loginButton.disabled = false;
-                loginButton.textContent = 'ログイン';
+                loginButton.textContent = 'Next';
             }
+        });
+
+        // 標準ログインに戻るボタン
+        document.getElementById('standard-login-btn').addEventListener('click', function() {
+            window.location.href = 'login_standard.html';
+        });
+
+        // サポートリンク処理
+        document.getElementById('reset-password').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('パスワードリセット機能は現在開発中です。');
+        });
+
+        document.getElementById('activate-account').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('アカウント有効化機能は現在開発中です。');
+        });
+
+        document.getElementById('help-sso').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('SSOヘルプ機能は現在開発中です。');
         });
     </script>
 </body>

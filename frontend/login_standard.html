@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEARLOCK - 標準ログイン</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+    <div class="login-container">
+        <h2>ログイン</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="メールアドレス" required>
+            <input type="password" id="password" placeholder="パスワード" required>
+            <button type="submit" id="login-button">ログイン</button>
+        </form>
+        <p>アカウントをお持ちでない方は<a href="signup.html">新規登録</a>してください。</p>
+        <p><a href="login.html">Rapid7スタイルログインに戻る</a></p>
+        <div id="login-status" class="status-message"></div>
+    </div>
+
+    <script>
+        // Supabaseの設定
+        const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
+        
+        // Cookie関連のヘルパー関数
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            }
+            return null;
+        }
+
+        function removeCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
+        }
+        
+        // Supabaseクライアントの初期化（Cookieストレージ使用）
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: false,
+                storageKey: 'sb-session-cookie',
+                storage: {
+                    getItem: (key) => {
+                        const value = getCookie(key);
+                        console.log('Getting cookie:', key, value ? 'exists' : 'not found');
+                        return value;
+                    },
+                    setItem: (key, value) => {
+                        console.log('Setting cookie:', key);
+                        setCookie(key, value, 7); // 7日間有効なCookie
+                    },
+                    removeItem: (key) => {
+                        console.log('Removing cookie:', key);
+                        removeCookie(key);
+                    }
+                }
+            }
+        });
+
+        // ステータスメッセージの表示
+        function updateStatus(message, isError = false) {
+            const statusElement = document.getElementById('login-status');
+            statusElement.textContent = message;
+            statusElement.className = 'status-message ' + (isError ? 'error' : 'success');
+            statusElement.style.display = 'block';
+            console.log(isError ? 'エラー: ' : 'ステータス: ', message);
+        }
+
+        // エラーハンドリング
+        window.addEventListener('error', function(event) {
+            updateStatus('JavaScriptエラー: ' + event.message, true);
+        });
+
+        // すでにログイン済みの場合はダッシュボードへ
+        async function checkAndRedirect() {
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('セッションの取得に失敗しました:', error);
+                    return;
+                }
+                
+                console.log('セッションチェック結果:', data);
+                
+                if (data.session) {
+                    console.log('ログイン済みのため、ダッシュボードへリダイレクト');
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (e) {
+                console.error('セッションチェック中にエラーが発生しました:', e);
+            }
+        }
+
+        // ページ読み込み時にセッションチェック
+        document.addEventListener('DOMContentLoaded', checkAndRedirect);
+
+        // ログインフォームの処理
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const loginButton = document.getElementById('login-button');
+            loginButton.disabled = true;
+            loginButton.textContent = 'ログイン中...';
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                updateStatus('ログイン処理中...', false);
+                console.log('ログイン試行中...', email);
+                
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                console.log('ログイン成功:', data);
+                updateStatus('ログイン成功！リダイレクト中...', false);
+                
+                // 短いタイムアウト後にリダイレクト（画面の更新を確認できるように）
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+                
+            } catch (error) {
+                console.error('ログイン中にエラーが発生しました:', error);
+                updateStatus(`ログインに失敗しました: ${error.message}`, true);
+                loginButton.disabled = false;
+                loginButton.textContent = 'ログイン';
+            }
+        });
+    </script>
+</body>
+</html> 
