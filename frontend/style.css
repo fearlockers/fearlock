@@ -173,6 +173,16 @@ img {
     margin-bottom: 4rem;
 }
 
+.hero-image {
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+    height: auto;
+    max-height: 600px;
+}
+
 /* 特徴セクション */
 .features {
     background-color: var(--light-bg);
@@ -263,6 +273,10 @@ img {
 
 .client-logo {
     max-width: 8rem;
+    max-height: 3rem;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     opacity: 0.7;
     transition: opacity 0.3s;
 }
