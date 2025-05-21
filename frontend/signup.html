@@ -21,13 +21,10 @@
         <p>すでにアカウントをお持ちの方は<a href="login.html">ログイン</a>してください。</p>
         <div id="signup-status" class="status-message"></div>
     </div>
-    <script type="module">
-        // config.jsから設定をインポート
-        import config from './config.js';
-        
+    <script>
         // Supabaseの設定
-        const supabaseUrl = config.supabaseUrl;
-        const supabaseKey = config.supabaseKey;
+        const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
         
         console.log('Using Supabase URL:', supabaseUrl);
         

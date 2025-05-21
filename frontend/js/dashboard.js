@@ -107,7 +107,7 @@ function generateReportHTML(projectData) {
             }
         });
     }
-    
+
     return `
         <div class="report-header">
             <h3>${escapeHtml(projectData.name)} - スキャンレポート</h3>
@@ -483,7 +483,7 @@ function setupEventListeners() {
                         } else {
                             card.classList.remove('selected');
                         }
-                    } else {
+        } else {
                         // フルスキャンではすべてのオプションを選択
                         card.classList.add('selected');
                     }
@@ -960,7 +960,7 @@ function displayProjectInfo(project) {
             newStartScanBtn.addEventListener('click', function() {
                 startProjectScan(project.id);
             });
-        } else {
+            } else {
             startScanBtn.disabled = true;
             if (project.status === 'completed') {
                 startScanBtn.innerHTML = '<i class="fas fa-check-circle"></i> スキャン完了';
@@ -1054,7 +1054,7 @@ function simulateProgress(projectId) {
             // 完了状態に更新
             try {
                 await supabase
-                    .from('projects')
+            .from('projects')
                     .update({ 
                         status: 'completed', 
                         progress: 100,
@@ -1094,7 +1094,7 @@ function simulateProgress(projectId) {
                 // 進捗表示を更新
                 updateProgressDisplay(projectId, progress);
                 
-            } catch (error) {
+    } catch (error) {
                 console.error('進捗更新エラー:', error);
             }
         }
@@ -1187,9 +1187,9 @@ function displayProjectResults(project) {
                 <p>${project.status === 'running' ? 'スキャンが実行中です。完了までお待ちください。' : 'スキャン結果がありません。スキャンを実行してください。'}</p>
             </div>
         `;
-        return;
-    }
-    
+            return;
+        }
+        
     // 結果の集計
     const results = typeof project.results === 'string' ? JSON.parse(project.results) : project.results;
     
@@ -1278,9 +1278,9 @@ function displayProjectReport(project) {
                 <p>スキャン結果がありません。スキャンを完了させてから再度お試しください。</p>
             </div>
         `;
-        return;
-    }
-    
+            return;
+        }
+        
     // レポートの表示
     reportTab.innerHTML = `
         <div class="report-container">
@@ -1293,9 +1293,9 @@ function displayProjectReport(project) {
             
             <div class="report-preview">
                 ${generateReportHTML(project)}
-            </div>
-        </div>
-    `;
+                </div>
+                </div>
+            `;
 }
 
 // プロジェクトをキャンセル
