@@ -2828,12 +2828,16 @@ img {
     }
     
     .vulnerability-detection-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
         gap: 12px;
     }
     
     .detection-item {
         padding: 12px 8px;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
     .systems-section-inline .deals-table {
@@ -2884,13 +2888,19 @@ img {
     border-radius: 8px;
     background-color: #f8fafc;
     border: 1px solid var(--camuquotes-border);
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px;
 }
 
 .detection-number {
-    font-size: 24px;
+    font-size: 32px !important;
     font-weight: 700;
-    margin-bottom: 4px;
-    display: block;
+    margin: 0 !important;
+    display: block !important;
+    width: 100% !important;
 }
 
 .detection-number.purple {
@@ -2910,29 +2920,39 @@ img {
 }
 
 .detection-value {
-    font-size: 14px;
+    font-size: 16px !important;
+    font-weight: 600 !important;
     color: var(--camuquotes-text);
-    margin-bottom: 2px;
+    margin: 0 !important;
+    display: block !important;
+    width: 100% !important;
 }
 
 .detection-label {
-    font-size: 11px;
+    font-size: 12px !important;
     color: var(--camuquotes-text-light);
-    margin-bottom: 8px;
+    margin: 0 !important;
+    display: block !important;
+    width: 100% !important;
 }
 
 .detection-examples {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: center;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 8px;
 }
 
 .vuln-example {
-    font-size: 10px;
+    font-size: 10px !important;
     color: var(--camuquotes-text-light);
     line-height: 1.2;
-    text-align: center;
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 2px 0 !important;
 }
 
 /* 分析画面専用スタイル */
