@@ -117,62 +117,62 @@
     <main class="analysis-main">
         <div class="analysis-container">
             <!-- 統計カードセクション -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-content">
+            <div class="analysis-stats-grid">
+                <div class="analysis-stat-card">
+                    <div class="analysis-stat-content">
                         <h3>Critical</h3>
-                        <div class="stat-number">45</div>
-                        <div class="stat-change">+5 from last week</div>
+                        <div class="analysis-stat-number">45</div>
+                        <div class="analysis-stat-change">+5 from last week</div>
                     </div>
-                    <div class="stat-icon critical">
+                    <div class="analysis-stat-icon critical">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-content">
+                <div class="analysis-stat-card">
+                    <div class="analysis-stat-content">
                         <h3>High</h3>
-                        <div class="stat-number">127</div>
-                        <div class="stat-change">-8 from last week</div>
+                        <div class="analysis-stat-number">127</div>
+                        <div class="analysis-stat-change">-8 from last week</div>
                     </div>
-                    <div class="stat-icon high">
+                    <div class="analysis-stat-icon high">
                         <i class="fas fa-bug"></i>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-content">
+                <div class="analysis-stat-card">
+                    <div class="analysis-stat-content">
                         <h3>Medium</h3>
-                        <div class="stat-number">284</div>
-                        <div class="stat-change">+12 from last week</div>
+                        <div class="analysis-stat-number">284</div>
+                        <div class="analysis-stat-change">+12 from last week</div>
                     </div>
-                    <div class="stat-icon medium">
+                    <div class="analysis-stat-icon medium">
                         <i class="fas fa-shield-alt"></i>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-content">
+                <div class="analysis-stat-card">
+                    <div class="analysis-stat-content">
                         <h3>Low</h3>
-                        <div class="stat-number">592</div>
-                        <div class="stat-change">+23 from last week</div>
+                        <div class="analysis-stat-number">592</div>
+                        <div class="analysis-stat-change">+23 from last week</div>
                     </div>
-                    <div class="stat-icon low">
+                    <div class="analysis-stat-icon low">
                         <i class="fas fa-info-circle"></i>
                     </div>
                 </div>
             </div>
 
             <!-- メインコンテンツグリッド -->
-            <div class="main-grid">
+            <div class="analysis-main-grid">
                 <!-- 左カラム -->
-                <div class="left-column">
+                <div class="analysis-left-column">
                     <!-- 最新検出結果 -->
                     <div class="latest-detections">
-                        <div class="section-header">
+                        <div class="analysis-section-header">
                             <div>
-                                <h2 class="section-title">Latest Detections</h2>
-                                <p class="section-subtitle">Most recent vulnerability detections from your scans</p>
+                                <h2 class="analysis-section-title">Latest Detections</h2>
+                                <p class="analysis-section-subtitle">Most recent vulnerability detections from your scans</p>
                             </div>
                         </div>
 
@@ -247,20 +247,20 @@
                     </div>
 
                     <!-- アナリティクスセクション -->
-                    <div class="analytics-section">
+                    <div class="analysis-analytics-section">
                         <div class="analytics-header">
-                            <h2 class="section-title">Analytics</h2>
+                            <h2 class="analysis-section-title">Analytics</h2>
                             <div class="analytics-badge">NEW</div>
                             <div class="year-selector">Year 2024</div>
                         </div>
-                        <div class="chart-container">
+                        <div class="analysis-chart-container">
                             <canvas id="analyticsChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- 右カラム -->
-                <div class="right-column">
+                <div class="analysis-right-column">
                     <!-- データビューセクション -->
                     <div class="data-view">
                         <div class="data-view-header">
@@ -275,25 +275,25 @@
                             <canvas id="statusChart"></canvas>
                         </div>
 
-                        <div class="chart-legend">
-                            <div class="legend-item">
-                                <div class="legend-left">
-                                    <div class="legend-color fixed"></div>
-                                    <span class="legend-label">Fixed Vulnerabilities</span>
+                        <div class="analysis-chart-legend">
+                            <div class="analysis-legend-item">
+                                <div class="analysis-legend-left">
+                                    <div class="analysis-legend-color fixed"></div>
+                                    <span class="analysis-legend-label">Fixed Vulnerabilities</span>
                                 </div>
                                 <div>
-                                    <span class="legend-percentage">65%</span>
-                                    <span class="legend-change">▲ 5.2%</span>
+                                    <span class="analysis-legend-percentage">65%</span>
+                                    <span class="analysis-legend-change">▲ 5.2%</span>
                                 </div>
                             </div>
-                            <div class="legend-item">
-                                <div class="legend-left">
-                                    <div class="legend-color pending"></div>
-                                    <span class="legend-label">Pending Fixes</span>
+                            <div class="analysis-legend-item">
+                                <div class="analysis-legend-left">
+                                    <div class="analysis-legend-color pending"></div>
+                                    <span class="analysis-legend-label">Pending Fixes</span>
                                 </div>
                                 <div>
-                                    <span class="legend-percentage">35%</span>
-                                    <span class="legend-change">▼ 5.2%</span>
+                                    <span class="analysis-legend-percentage">35%</span>
+                                    <span class="analysis-legend-change">▼ 5.2%</span>
                                 </div>
                             </div>
                         </div>
@@ -302,7 +302,7 @@
                     <!-- レポートドキュメントセクション -->
                     <div class="report-document">
                         <div class="report-header">
-                            <h2 class="section-title">Scan Reports</h2>
+                            <h2 class="analysis-section-title">Scan Reports</h2>
                             <div class="report-controls">
                                 <div class="control-dot orange"></div>
                                 <div class="control-dot purple"></div>
