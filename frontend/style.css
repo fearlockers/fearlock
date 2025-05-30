@@ -2884,10 +2884,6 @@ img {
     border-radius: 8px;
     background-color: #f8fafc;
     border: 1px solid var(--camuquotes-border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .detection-number {
