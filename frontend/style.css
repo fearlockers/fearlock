@@ -2894,19 +2894,19 @@ img {
 }
 
 .detection-number.purple {
-    color: #8b5cf6;
+    color: #3b82f6;
 }
 
 .detection-number.red {
-    color: #ef4444;
+    color: #06b6d4;
 }
 
 .detection-number.yellow {
-    color: #f59e0b;
+    color: #0ea5e9;
 }
 
 .detection-number.green {
-    color: #10b981;
+    color: #0284c7;
 }
 
 .detection-value {
