@@ -2872,7 +2872,7 @@ img {
 /* 脆弱性検出グリッドスタイル */
 .vulnerability-detection-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 24px;
     padding: 16px 0;
@@ -2884,6 +2884,10 @@ img {
     border-radius: 8px;
     background-color: #f8fafc;
     border: 1px solid var(--camuquotes-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .detection-number {
@@ -2925,12 +2929,14 @@ img {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    align-items: center;
 }
 
 .vuln-example {
     font-size: 10px;
     color: var(--camuquotes-text-light);
     line-height: 1.2;
+    text-align: center;
 }
 
 /* 分析画面専用スタイル */
