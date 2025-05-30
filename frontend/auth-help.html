@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEARLOCK - 認証ヘルプ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-sidebar">
+            <div class="auth-logo">
+                <img src="images/fearlock-logo.svg" alt="FEARLOCK">
+            </div>
+            <div class="auth-message">
+                <h2>ハッカーの見るものを<br>あなたも見る</h2>
+                <p>脆弱性の盲点は、攻撃者に絶好の機会を与えます。私たちの脅威検知・攻撃対策管理ソリューション FEARLOCK をぜひお試しください。</p>
+                <a href="index.html" class="btn btn-secondary">ホームに戻る</a>
+            </div>
+        </div>
+        
+        <div class="auth-form-container">
+            <div class="auth-step">
+                <h2>認証メールについて</h2>
+                <div class="help-content">
+                    <h3>認証コードの確認方法</h3>
+                    <p>登録時に入力したメールアドレスに認証コードが送信されます。以下の手順で確認してください：</p>
+                    
+                    <ol class="help-list">
+                        <li>
+                            <strong>メールを確認する</strong>
+                            <p>「FEARLOCK」からのメールを確認してください。件名は「【FEARLOCK】認証コード: XXXXXX」となっています。</p>
+                            <div class="help-image">
+                                <img src="images/auth-email-example.svg" alt="認証メールの例">
+                            </div>
+                        </li>
+                        <li>
+                            <strong>メール内のコードを確認</strong>
+                            <p>メール内に大きく表示されている6桁のコードを確認してください。このコードは自動生成された一意のコードです。</p>
+                            <div class="note-box">
+                                <p><strong>重要:</strong> コードの有効期限は発行から3分間です。期限が切れた場合は、登録画面で「コードを再送信」ボタンをクリックしてください。</p>
+                            </div>
+                        </li>
+                        <li>
+                            <strong>コードを入力</strong>
+                            <p>FEARLOCK登録ページに戻り、表示されている「認証コードを入力」フォームに、メールで受け取った6桁のコードを入力してください。</p>
+                        </li>
+                    </ol>
+
+                    <h3>認証コードが届かない場合</h3>
+                    <p>以下の対処法をお試しください：</p>
+                    <ul class="help-list">
+                        <li>迷惑メールフォルダを確認する</li>
+                        <li>登録画面で「コードを再送信」ボタンをクリックする</li>
+                        <li>メールアドレスが正確に入力されているか確認する</li>
+                        <li>別のメールアドレスで試す</li>
+                        <li>数分待ってから再度試す</li>
+                    </ul>
+
+                    <h3>新しい認証メールについて</h3>
+                    <p>
+                        2023年7月より、セキュリティ強化のため認証方法を「マジックリンク」から「認証コード」に変更しました。<br>
+                        新しい認証方法では以下のメリットがあります：
+                    </p>
+                    <ul class="help-list">
+                        <li>セキュリティの向上 - ワンタイムの認証コードにより、不正アクセスのリスクが低減</li>
+                        <li>モバイル対応の向上 - デバイス間の移動なしで認証が完了</li>
+                        <li>3分間の有効期限による不正利用防止</li>
+                    </ul>
+
+                    <h3>既存アカウントへのセキュリティ通知</h3>
+                    <p>
+                        FEARLOCKでは、既に登録済みのメールアドレスでの再登録を防止するためのセキュリティ機能を実装しています。
+                    </p>
+                    <div class="help-image">
+                        <img src="images/account-exists-email.svg" alt="既存アカウント通知メールの例" onerror="this.style.display='none'">
+                    </div>
+                    <p>以下の状況が発生した場合、セキュリティアラートが送信されます：</p>
+                    <ul class="help-list">
+                        <li>
+                            <strong>既存アカウントでの登録試行</strong>
+                            <p>既に登録済みのメールアドレスで新規登録が試みられた場合、認証コードは送信されません。代わりに、セキュリティ通知メールが送信され、不正アクセスの可能性について警告します。</p>
+                        </li>
+                        <li>
+                            <strong>セキュリティ対策</strong>
+                            <p>アカウントのセキュリティを確保するため、パスワードのリセットを検討してください。メール内のリンクからパスワードの変更が可能です。</p>
+                        </li>
+                    </ul>
+
+                    <div class="help-actions">
+                        <a href="signup.html" class="btn btn-primary">登録ページに戻る</a>
+                        <a href="contact.html" class="btn btn-outline">サポートに問い合わせる</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .help-content {
+            padding: 1rem 0;
+        }
+        
+        .help-list {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .help-list li {
+            margin-bottom: 1.5rem;
+        }
+        
+        .help-list li strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--auth-text);
+        }
+        
+        .help-image {
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        
+        .help-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .note-box {
+            background-color: rgba(255, 104, 67, 0.1);
+            border-left: 4px solid var(--auth-secondary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .help-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .help-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</body>
+</html> 

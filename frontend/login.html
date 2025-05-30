@@ -8,45 +8,43 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
-<body>
-    <div class="rapid7-login-container">
-        <div class="rapid7-login-form">
-            <div class="rapid7-login-form-inner">
-                <img src="images/rapid7-logo.png" alt="FEARLOCK" class="rapid7-logo">
-                <h2 class="rapid7-login-title">Customer Sign-in</h2>
-                <form id="login-form">
-                    <div class="rapid7-form-group">
-                        <label for="email" class="rapid7-form-label">Email</label>
-                        <input type="email" id="email" class="rapid7-form-input" required>
-                    </div>
-                    <div class="rapid7-form-group">
-                        <button type="submit" id="login-button" class="rapid7-btn rapid7-btn-primary">Next</button>
-                    </div>
-                </form>
-                <div class="rapid7-divider"><span>or</span></div>
-                <button class="rapid7-btn rapid7-btn-secondary" id="standard-login-btn">Back to standard login</button>
-                <div class="rapid7-links">
-                    <p><a href="#" id="reset-password">Reset my password</a></p>
-                    <p><a href="#" id="activate-account">Activate my account</a></p>
-                    <p><a href="#" id="help-sso">Help with SSO</a></p>
-                    <p><a href="signup.html">Not a customer? Try for free</a></p>
-                </div>
-                <div id="login-status" class="status-message"></div>
-                <div class="rapid7-footer">
-                    <span>© 2025 FEARLOCK</span>
-                    <div>
-                        <a href="#blog">Blog</a>
-                        <a href="#docs">Docs</a>
-                        <a href="#support">Support</a>
-                        <a href="#extensions">Extensions</a>
-                    </div>
-                </div>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-sidebar">
+            <div class="auth-logo">
+                <img src="images/fearlock-logo.svg" alt="FEARLOCK">
+            </div>
+            <div class="auth-message">
+                <h2>ハッカーの見るものを<br>あなたも見る</h2>
+                <p>脆弱性の盲点は、攻撃者に絶好の機会を与えます。私たちの脅威検知・攻撃対策管理ソリューション FEARLOCK をぜひお試しください。</p>
+                <a href="#" class="btn btn-secondary">詳細を見る</a>
             </div>
         </div>
-        <div class="rapid7-banner">
-            <h1>SEE WHAT HACKERS SEE</h1>
-            <p>Blind spots in your attack surface create prime opportunities for adversaries. That's why we're offering you exclusive access to Surface Command, our attack surface management solution.</p>
-            <a href="signup.html" class="rapid7-banner-cta">Start Trial</a>
+        
+        <div class="auth-form-container">
+            <div class="auth-step">
+                <h2>ログイン</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">メールアドレス</label>
+                        <input type="email" id="email" class="auth-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <input type="password" id="password" class="auth-input" placeholder="パスワード" required>
+                        <div class="auth-links">
+                            <a href="#" id="forgot-password">パスワードをお忘れですか？</a>
+                        </div>
+                    </div>
+                    <button type="submit" id="login-button" class="btn btn-primary btn-block">ログイン</button>
+                    <div class="form-divider">または</div>
+                    <a href="signup.html" class="btn btn-outline btn-block">新規アカウント作成</a>
+                </form>
+                <div class="auth-links">
+                    <a href="auth-help.html" target="_blank">認証に関するヘルプ</a>
+                </div>
+                <div id="login-status" class="auth-status"></div>
+            </div>
         </div>
     </div>
 
@@ -88,19 +86,9 @@
                 detectSessionInUrl: false,
                 storageKey: 'sb-session-cookie',
                 storage: {
-                    getItem: (key) => {
-                        const value = getCookie(key);
-                        console.log('Getting cookie:', key, value ? 'exists' : 'not found');
-                        return value;
-                    },
-                    setItem: (key, value) => {
-                        console.log('Setting cookie:', key);
-                        setCookie(key, value, 7); // 7日間有効なCookie
-                    },
-                    removeItem: (key) => {
-                        console.log('Removing cookie:', key);
-                        removeCookie(key);
-                    }
+                    getItem: (key) => getCookie(key),
+                    setItem: (key, value) => setCookie(key, value, 7), // 7日間有効なCookie
+                    removeItem: (key) => removeCookie(key)
                 }
             }
         });
@@ -109,10 +97,14 @@
         function updateStatus(message, isError = false) {
             const statusElement = document.getElementById('login-status');
             statusElement.textContent = message;
-            statusElement.className = 'status-message ' + (isError ? 'error' : 'success');
-            statusElement.style.display = 'block';
-            console.log(isError ? 'エラー: ' : 'ステータス: ', message);
+            statusElement.className = 'auth-status ' + (isError ? 'error' : 'success');
+            statusElement.style.display = message ? 'block' : 'none';
         }
+
+        // エラーハンドリング
+        window.addEventListener('error', function(event) {
+            updateStatus('システムエラーが発生しました: ' + event.message, true);
+        });
 
         // すでにログイン済みの場合はダッシュボードへ
         async function checkAndRedirect() {
@@ -124,10 +116,7 @@
                     return;
                 }
                 
-                console.log('セッションチェック結果:', data);
-                
                 if (data.session) {
-                    console.log('ログイン済みのため、ダッシュボードへリダイレクト');
                     window.location.href = 'dashboard.html';
                 }
             } catch (e) {
@@ -138,110 +127,84 @@
         // ページ読み込み時にセッションチェック
         document.addEventListener('DOMContentLoaded', checkAndRedirect);
 
-        // ログインフォームの処理 - Rapid7スタイルでは2段階認証
-        let userEmail = '';
+        // パスワードリセットの処理
+        document.getElementById('forgot-password').addEventListener('click', async function(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            
+            if (!email) {
+                updateStatus('パスワードリセットのためにメールアドレスを入力してください', true);
+                document.getElementById('email').focus();
+                return;
+            }
+            
+            try {
+                updateStatus('パスワードリセットの準備中...', false);
+                
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/reset-password.html',
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                updateStatus('パスワードリセットのメールを送信しました。メールをご確認ください。', false);
+                
+            } catch (error) {
+                console.error('パスワードリセットエラー:', error);
+                updateStatus(`パスワードリセットに失敗しました: ${error.message}`, true);
+            }
+        });
 
+        // ログインフォームの処理
         document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             
             const loginButton = document.getElementById('login-button');
             loginButton.disabled = true;
-            loginButton.textContent = 'Processing...';
+            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ログイン中...';
             
-            userEmail = document.getElementById('email').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
             try {
-                if (!userEmail) {
-                    throw new Error('メールアドレスを入力してください');
-                }
+                updateStatus('認証中...', false);
                 
-                // フォームを変更してパスワード入力フォームを表示
-                const form = document.getElementById('login-form');
-                form.innerHTML = `
-                    <div class="rapid7-form-group">
-                        <label for="email" class="rapid7-form-label">Email</label>
-                        <input type="email" id="email" class="rapid7-form-input" value="${userEmail}" disabled>
-                    </div>
-                    <div class="rapid7-form-group">
-                        <label for="password" class="rapid7-form-label">Password</label>
-                        <input type="password" id="password" class="rapid7-form-input" required autofocus>
-                    </div>
-                    <div class="rapid7-form-group">
-                        <button type="submit" id="login-button" class="rapid7-btn rapid7-btn-primary">Sign In</button>
-                    </div>
-                `;
-                
-                // イベントリスナーを更新
-                form.removeEventListener('submit', this);
-                form.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    
-                    const loginButton = document.getElementById('login-button');
-                    loginButton.disabled = true;
-                    loginButton.textContent = 'Signing in...';
-                    
-                    const password = document.getElementById('password').value;
-                    
-                    try {
-                        updateStatus('ログイン処理中...', false);
-                        console.log('ログイン試行中...', userEmail);
-                        
-                        const { data, error } = await supabase.auth.signInWithPassword({
-                            email: userEmail,
-                            password: password,
-                        });
-                        
-                        if (error) {
-                            throw error;
-                        }
-                        
-                        console.log('ログイン成功:', data);
-                        updateStatus('ログイン成功！リダイレクト中...', false);
-                        
-                        // 短いタイムアウト後にリダイレクト（画面の更新を確認できるように）
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1000);
-                        
-                    } catch (error) {
-                        console.error('ログイン中にエラーが発生しました:', error);
-                        updateStatus(`ログインに失敗しました: ${error.message}`, true);
-                        loginButton.disabled = false;
-                        loginButton.textContent = 'Sign In';
-                    }
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
                 });
                 
-                loginButton.disabled = false;
-                loginButton.textContent = 'Next';
+                if (error) {
+                    throw error;
+                }
+                
+                updateStatus('ログイン成功！リダイレクト中...', false);
+                
+                // 短いタイムアウト後にリダイレクト（画面の更新を確認できるように）
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
                 
             } catch (error) {
-                console.error('メールアドレス処理中にエラーが発生しました:', error);
-                updateStatus(`エラー: ${error.message}`, true);
+                console.error('ログイン中にエラーが発生しました:', error);
+                updateStatus(`ログインに失敗しました: ${error.message}`, true);
+            } finally {
                 loginButton.disabled = false;
-                loginButton.textContent = 'Next';
+                loginButton.textContent = 'ログイン';
             }
         });
-
-        // 標準ログインに戻るボタン
-        document.getElementById('standard-login-btn').addEventListener('click', function() {
-            window.location.href = 'login_standard.html';
-        });
-
-        // サポートリンク処理
-        document.getElementById('reset-password').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('パスワードリセット機能は現在開発中です。');
-        });
-
-        document.getElementById('activate-account').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('アカウント有効化機能は現在開発中です。');
-        });
-
-        document.getElementById('help-sso').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('SSOヘルプ機能は現在開発中です。');
-        });
     </script>
+
+    <style>
+    /* スタイルを追加 */
+    .auth-links {
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    </style>
 </body>
 </html> 

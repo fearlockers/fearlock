@@ -3,346 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>脆弱性診断ツール - ダッシュボード</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>FEARLOCK - 脆弱性診断ダッシュボード</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- デバッグモード用のスタイル -->
-    <style>
-        .debug-log-entry {
-            margin: 2px 0;
-            padding: 2px 5px;
-            border-bottom: 1px solid #333;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-        .debug-log-entry.error {
-            color: #ff4444;
-        }
-        .scan-success-indicator {
-            display: none;
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 5px;
-            background-color: #4caf50;
-            color: white;
-            text-align: center;
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .hidden {
-            display: none !important;
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 </head>
-<body>
-    <div class="dashboard-container">
-        <!-- サイドバー -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>脆弱性診断ツール</h2>
+<body class="camuquotes-body" data-theme="light">
+    <!-- トップナビゲーション -->
+    <header class="top-header">
+        <div class="header-container">
+            <!-- 左側：ベントメニューとロゴ -->
+            <div class="header-left">
+                <div class="logo-section">
+                    <button class="bento-menu-btn" id="bento-menu-btn">
+                        <div class="bento-grid">
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
             </div>
-            <div class="sidebar-user">
-                <div class="user-avatar">
-                    <i class="fas fa-user-shield"></i>
+                    </button>
+                    <span class="logo-text">FEARLOCK</span>
                 </div>
-                <div class="user-info">
-                    <p id="user-email">ユーザー</p>
-                </div>
+                
+                <nav class="top-nav">
+                    <a href="dashboard.html" class="nav-item active">ダッシュボード</a>
+                    <a href="projects.html" class="nav-item">プロジェクト</a>
+                    <a href="vulnerability-scan.html" class="nav-item">脆弱性スキャン</a>
+                    <a href="analysis.html" class="nav-item">分析</a>
+                    <a href="reports.html" class="nav-item">レポート</a>
+                    <a href="settings.html" class="nav-item">設定</a>
+                </nav>
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active">
-                        <a href="#dashboard"><i class="fas fa-tachometer-alt"></i> ダッシュボード</a>
-                    </li>
-                    <li>
-                        <a href="#scan"><i class="fas fa-search"></i> 新規プロジェクト</a>
-                    </li>
-                    <li>
-                        <a href="#history"><i class="fas fa-history"></i> スキャン履歴</a>
-                    </li>
-                    <li>
-                        <a href="#reports"><i class="fas fa-chart-bar"></i> レポート</a>
-                    </li>
-                    <li>
-                        <a href="#vulnerabilities"><i class="fas fa-bug"></i> 脆弱性データベース</a>
-                    </li>
-                    <li>
-                        <a href="#settings"><i class="fas fa-cog"></i> 設定</a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <button id="logout-btn" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i> ログアウト</button>
-            </div>
-        </div>
-
-        <!-- メインコンテンツ -->
-        <div class="main-content">
-            <header class="dashboard-header">
-                <h1>ダッシュボード</h1>
-            </header>
             
-            <div class="dashboard-content">
-                <!-- コンテンツセクション -->
-                <div id="dashboard-section" class="content-section active">
-                    <div class="welcome-box">
-                        <h2>ようこそ <span id="welcome-user-email">ユーザー</span> さん</h2>
-                        <p>脆弱性診断ツールへようこそ。左側のメニューから機能を選択してください。</p>
-                    </div>
-                    
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-icon bg-blue">
-                                <i class="fas fa-search"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="total-projects-count">0</h3>
-                                <p>実行スキャン数</p>
-                            </div>
+            <!-- 右側：ユーザーメニュー -->
+            <div class="header-right">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button class="help-btn">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-avatar" id="user-menu-btn">
+                        <img src="https://via.placeholder.com/32x32/4F46E5/FFFFFF?text=U" alt="User Avatar">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-info">
+                            <div class="user-name" id="user-name">ユーザー</div>
+                            <div class="user-email" id="user-email">user@example.com</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-red">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="high-risk-count">0</h3>
-                                <p>高リスク脆弱性</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-orange">
-                                <i class="fas fa-exclamation-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="medium-risk-count">0</h3>
-                                <p>中リスク脆弱性</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon bg-green">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="fixed-count">0</h3>
-                                <p>修正済み脆弱性</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 進行中プロジェクト一覧 -->
-                    <div class="section-header">
-                        <h2>プロジェクト一覧</h2>
-                        <button id="refresh-projects-btn" class="btn btn-sm btn-secondary">
-                            <i class="fas fa-sync-alt"></i> 更新
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            プロフィール
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            設定
+                        </a>
+                        <hr class="dropdown-divider">
+                        <button class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            ログアウト
                         </button>
                     </div>
-                    
-                    <div id="ongoingProjectsContainer">
-                        <!-- プロジェクトがここに動的に表示されます -->
-                        <div class="loading-projects">
-                            <i class="fas fa-spinner fa-spin"></i> プロジェクトを読み込み中...
-                        </div>
-                    </div>
                 </div>
+            </div>
+        </div>
+    </header>
 
-                <!-- 新規プロジェクト画面 -->
-                <div id="scan-section" class="content-section">
-                    <div class="card">
-                        <form id="new-scan-form">
-                            <div class="form-group">
-                                <label for="project-name">プロジェクト名</label>
-                                <input type="text" id="project-name" placeholder="プロジェクト名を入力" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="target-url">対象URL</label>
-                                <input type="url" id="target-url" placeholder="https://example.com" required>
-                            </div>
-                            
-                            <!-- 改良されたスキャンタイプUI -->
-                            <div class="form-group">
-                                <label>スキャンタイプ</label>
-                                <div class="scan-type-container">
-                                    <div class="scan-type-option selected" data-type="quick">
-                                        <i class="fas fa-bolt"></i>
-                                        <h4>クイックスキャン</h4>
-                                        <p>基本的なセキュリティチェックを素早く実行</p>
-                                        <input type="radio" name="scan-type" value="quick" checked style="display: none;">
-                                    </div>
-                                    <div class="scan-type-option" data-type="full">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <h4>フルスキャン</h4>
-                                        <p>詳細な脆弱性チェックを実行（時間がかかります）</p>
-                                        <input type="radio" name="scan-type" value="full" style="display: none;">
-                                    </div>
-                                    <div class="scan-type-option" data-type="custom">
-                                        <i class="fas fa-sliders-h"></i>
-                                        <h4>カスタム</h4>
-                                        <p>特定の脆弱性に焦点を当てたスキャン</p>
-                                        <input type="radio" name="scan-type" value="custom" style="display: none;">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- 改良されたスキャンオプションUI -->
-                            <div class="form-group">
-                                <label>スキャンオプション</label>
-                                <div class="scan-options-container">
-                                    <div class="scan-option-card selected" data-option="xss">
-                                        <div class="scan-option-icon">
-                                            <i class="fas fa-code"></i>
-                                        </div>
-                                        <div class="scan-option-info">
-                                            <h4>XSS脆弱性</h4>
-                                            <p>クロスサイトスクリプティング攻撃の検出</p>
-                                        </div>
-                                    </div>
-                                    <div class="scan-option-card selected" data-option="sqli">
-                                        <div class="scan-option-icon">
-                                            <i class="fas fa-database"></i>
-                                        </div>
-                                        <div class="scan-option-info">
-                                            <h4>SQLインジェクション</h4>
-                                            <p>SQLインジェクション攻撃の検出</p>
-                                        </div>
-                                    </div>
-                                    <div class="scan-option-card selected" data-option="csrf">
-                                        <div class="scan-option-icon">
-                                            <i class="fas fa-exchange-alt"></i>
-                                        </div>
-                                        <div class="scan-option-info">
-                                            <h4>CSRF脆弱性</h4>
-                                            <p>クロスサイトリクエストフォージェリの検出</p>
-                                        </div>
-                                    </div>
-                                    <div class="scan-option-card" data-option="openredirect">
-                                        <div class="scan-option-icon">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </div>
-                                        <div class="scan-option-info">
-                                            <h4>オープンリダイレクト</h4>
-                                            <p>悪意のあるリダイレクトの検出</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">プロジェクト作成</button>
-                        </form>
-                        
-                        <!-- 成功メッセージ表示エリア -->
-                        <div id="project-success-indicator" class="scan-success-indicator">
-                            <i class="fas fa-check-circle"></i> プロジェクトが正常に作成されました！ダッシュボードに戻ります...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- プロジェクト詳細画面 -->
-                <div id="project-section" class="content-section">
-                    <div class="section-header">
-                        <div class="project-header-actions">
-                            <button id="back-to-dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> ダッシュボードに戻る</button>
-                        </div>
-                        <h2>プロジェクト詳細: <span id="project-title">プロジェクト名</span></h2>
-                    </div>
-                    
-                    <!-- ステップフローバー -->
-                    <div class="step-flow-bar">
-                        <div class="step active" data-step="info">
-                            <div class="step-number">1</div>
-                            <div class="step-label">プロジェクト情報</div>
-                        </div>
-                        <div class="step" data-step="progress">
-                            <div class="step-number">2</div>
-                            <div class="step-label">進捗状況</div>
-                        </div>
-                        <div class="step" data-step="results">
-                            <div class="step-number">3</div>
-                            <div class="step-label">スキャン結果</div>
-                        </div>
-                        <div class="step" data-step="report">
-                            <div class="step-number">4</div>
-                            <div class="step-label">レポート作成</div>
-                        </div>
-                        <div class="step-flow-line"></div>
-                    </div>
-                    
-                    <div class="card">
-                        <div id="project-details-content">
-                            <!-- プロジェクト詳細がここに表示されます -->
-                            <div class="project-tab-content active" id="project-info-tab">
-                                <div class="project-details-info">
-                                    <!-- プロジェクト情報がここに表示されます -->
-                                </div>
-                                <div class="project-scan-actions">
-                                    <button id="start-scan-btn" class="btn btn-primary"><i class="fas fa-play"></i> スキャンを実行</button>
-                                </div>
-                            </div>
-                            
-                            <div class="project-tab-content" id="project-progress-tab">
-                                <!-- 進捗状況がここに表示されます -->
-                            </div>
-                            
-                            <div class="project-tab-content" id="project-results-tab">
-                                <!-- スキャン結果がここに表示されます -->
-                            </div>
-                            
-                            <div class="project-tab-content" id="project-report-tab">
-                                <!-- レポート作成がここに表示されます -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 設定画面 -->
-                <div id="settings-section" class="content-section">
-                    <div class="section-header">
-                        <h2>設定</h2>
-                    </div>
-                    <div class="card">
-                        <h3>ユーザー情報</h3>
-                        <div id="user-details">
-                            <!-- ユーザー情報がここに表示されます -->
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>アプリケーション設定</h3>
-                        <form id="settings-form">
-                            <div class="form-group">
-                                <label for="notification">通知設定</label>
-                                <div class="checkbox-group">
-                                    <label>
-                                        <input type="checkbox" id="email-notification" checked>
-                                        メール通知を有効にする
-                                    </label>
-                                    <label>
-                                        <input type="checkbox" id="browser-notification">
-                                        ブラウザ通知を有効にする
-                                    </label>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">設定を保存</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- 他のセクションもここに追加できます -->
-
+    <!-- ベントメニュードロップダウン -->
+    <div class="bento-dropdown" id="bento-dropdown">
+        <div class="bento-dropdown-content">
+            <div class="bento-apps-grid">
+                <a href="dashboard.html" class="bento-app-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>ダッシュボード</span>
+                </a>
+                <a href="projects.html" class="bento-app-item">
+                    <i class="fas fa-folder"></i>
+                    <span>プロジェクト</span>
+                </a>
+                <a href="vulnerability-scan.html" class="bento-app-item">
+                    <i class="fas fa-search"></i>
+                    <span>脆弱性スキャン</span>
+                </a>
+                <a href="analysis.html" class="bento-app-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>分析</span>
+                </a>
+                <a href="reports.html" class="bento-app-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>レポート</span>
+                </a>
+                <a href="settings.html" class="bento-app-item">
+                    <i class="fas fa-cog"></i>
+                    <span>設定</span>
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- 上部セクション -->
+            <div class="top-section">
+                <!-- 左側：総スキャン数概要 -->
+                <div class="overview-card">
+                    <div class="overview-header">
+                        <h2>総スキャン数</h2>
+                        <div class="time-filter">
+                            <i class="fas fa-calendar-alt"></i>
+                            <select class="time-select">
+                                <option value="all">全期間</option>
+                                <option value="today">今日</option>
+                                <option value="week">今週</option>
+                                <option value="month">今月</option>
+                                <option value="quarter">四半期</option>
+                                <option value="year">今年</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 脆弱性分布チャート -->
+                    <div class="vulnerability-distribution">
+                        <div class="chart-container-small">
+                            <div class="chart-and-stats-layout">
+                                <div class="donut-chart-wrapper-small">
+                                    <canvas id="vulnerabilityChartTop" width="120" height="120"></canvas>
+                                    <div class="chart-center-small">
+                                        <div class="center-number-small">2,847</div>
+                                        <div class="center-label-small">脆弱性</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="chart-stats-small">
+                                    <div class="stat-item-small">
+                                        <div class="stat-number-small" style="color: #8b5cf6;">45</div>
+                                        <div class="stat-label-small">緊急</div>
+                                        <div class="stat-sublabel-small">Critical</div>
+                                    </div>
+                                    <div class="stat-item-small">
+                                        <div class="stat-number-small" style="color: #ef4444;">135</div>
+                                        <div class="stat-label-small">高</div>
+                                        <div class="stat-sublabel-small">High</div>
+                                    </div>
+                                    <div class="stat-item-small">
+                                        <div class="stat-number-small" style="color: #f59e0b;">643</div>
+                                        <div class="stat-label-small">中</div>
+                                        <div class="stat-sublabel-small">Medium</div>
+                                    </div>
+                                    <div class="stat-item-small">
+                                        <div class="stat-number-small" style="color: #10b981;">2069</div>
+                                        <div class="stat-label-small">低</div>
+                                        <div class="stat-sublabel-small">Low</div>
+                                    </div>
+                            </div>
+                            </div>
+                        </div>
+                            </div>
+                    
+                    <div class="docs-pipeline">
+                        <div class="docs-info">
+                            <span class="docs-label">実行済みスキャン</span>
+                            <div class="docs-main">
+                                <i class="fas fa-search docs-icon"></i>
+                                <div class="docs-number">1,844</div>
+                                <div class="docs-value">件</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="vulnerability-detection-grid">
+                        <div class="detection-item">
+                            <div class="detection-number purple">45</div>
+                            <div class="detection-value">緊急</div>
+                            <div class="detection-label">Critical</div>
+                            <div class="detection-examples">
+                                <div class="vuln-example">SQLインジェクション</div>
+                                <div class="vuln-example">リモートコード実行</div>
+                            </div>
+                        </div>
+                        <div class="detection-item">
+                            <div class="detection-number red">135</div>
+                            <div class="detection-value">高</div>
+                            <div class="detection-label">High</div>
+                            <div class="detection-examples">
+                                <div class="vuln-example">XSS脆弱性</div>
+                                <div class="vuln-example">認証バイパス</div>
+                            </div>
+                        </div>
+                        <div class="detection-item">
+                            <div class="detection-number yellow">643</div>
+                            <div class="detection-value">中</div>
+                            <div class="detection-label">Medium</div>
+                            <div class="detection-examples">
+                                <div class="vuln-example">CSRF脆弱性</div>
+                                <div class="vuln-example">情報漏洩</div>
+                            </div>
+                        </div>
+                        <div class="detection-item">
+                            <div class="detection-number green">2069</div>
+                            <div class="detection-value">低</div>
+                            <div class="detection-label">Low</div>
+                            <div class="detection-examples">
+                                <div class="vuln-example">設定不備</div>
+                                <div class="vuln-example">バージョン情報漏洩</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="breakdown-stats">
+                        <div class="breakdown-item">
+                            <span class="breakdown-number">732</span>
+                            <span class="breakdown-label">Webアプリ</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-number">313</span>
+                            <span class="breakdown-label">ネットワーク</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-number">464</span>
+                            <span class="breakdown-label">API</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-number">335</span>
+                            <span class="breakdown-label">モバイル</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-summary">
+                        <div class="summary-row">
+                            <span class="summary-label">発見された脆弱性</span>
+                            <span class="summary-value">2,847</span>
+                            </div>
+                        <div class="summary-row">
+                            <span class="summary-label">修正済み</span>
+                            <span class="summary-value">1,924</span>
+                            </div>
+                        <div class="summary-row">
+                            <span class="summary-label">未修正（高リスク）</span>
+                            <span class="summary-value orange">135</span>
+                                </div>
+                        <div class="summary-row">
+                            <span class="summary-label">平均修正時間</span>
+                            <span class="summary-value">7.2日</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側：月次スキャントレンド -->
+                <div class="high-value-card">
+                    <div class="card-header">
+                        <h2>月次スキャントレンド</h2>
+                        <div class="time-filter">
+                            <i class="fas fa-calendar-alt"></i>
+                            <select class="time-select">
+                                <option value="all">全期間</option>
+                                <option value="week">今週</option>
+                                <option value="month">今月</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="monthly-chart-section">
+                        <div class="scan-chart-container">
+                            <canvas id="scanStatsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 対象システム一覧を月次スキャントレンドの下に移動 -->
+                    <div class="systems-section-inline">
+                        <div class="section-header">
+                            <h3>対象システム一覧</h3>
+                            </div>
+                        <div class="deals-table">
+                            <div class="table-header">
+                                <span>対象システム</span>
+                                <span>対象URL</span>
+                                <span>セキュリティスコア</span>
+                                <span>脆弱性分布</span>
+                                <span>担当者</span>
+                            </div>
+                            
+                            <div class="table-row">
+                                <span class="account-name">Alpha Corp. Web</span>
+                                <span class="opportunity">https://alpha-corp.com</span>
+                                <span class="deal-size security-score-high">92.5</span>
+                                <div class="vulnerability-mini-chart">
+                                    <canvas id="miniChart1" width="40" height="40"></canvas>
+                                    </div>
+                                <div class="approvers">
+                                    <img src="https://via.placeholder.com/24x24/EF4444/FFFFFF?text=A" alt="A">
+                                    <img src="https://via.placeholder.com/24x24/10B981/FFFFFF?text=B" alt="B">
+                                </div>
+                            </div>
+                            
+                            <div class="table-row">
+                                <span class="account-name">Zeta API Server</span>
+                                <span class="opportunity">https://api.zeta.com</span>
+                                <span class="deal-size security-score-medium">78.3</span>
+                                <div class="vulnerability-mini-chart">
+                                    <canvas id="miniChart2" width="40" height="40"></canvas>
+                                        </div>
+                                <div class="approvers">
+                                    <img src="https://via.placeholder.com/24x24/8B5CF6/FFFFFF?text=D" alt="D">
+                                </div>
+                            </div>
+                            
+                            <div class="table-row">
+                                <span class="account-name">Bezel Mobile App</span>
+                                <span class="opportunity">https://app.bezel.com</span>
+                                <span class="deal-size security-score-low">65.8</span>
+                                <div class="vulnerability-mini-chart">
+                                    <canvas id="miniChart3" width="40" height="40"></canvas>
+                                </div>
+                                <div class="approvers">
+                                    <img src="https://via.placeholder.com/24x24/EC4899/FFFFFF?text=E" alt="E">
+                                    <img src="https://via.placeholder.com/24x24/06B6D4/FFFFFF?text=F" alt="F">
+                                </div>
+                            </div>
+                            
+                            <div class="table-row">
+                                <span class="account-name">Alpha Corp. Web</span>
+                                <span class="opportunity">https://alpha-corp.com</span>
+                                <span class="deal-size security-score-high">92.5</span>
+                                <div class="vulnerability-mini-chart">
+                                    <canvas id="miniChart4" width="40" height="40"></canvas>
+                                </div>
+                                <div class="approvers">
+                                    <img src="https://via.placeholder.com/24x24/F97316/FFFFFF?text=G" alt="G">
+                                    <img src="https://via.placeholder.com/24x24/10B981/FFFFFF?text=H" alt="H">
+                                </div>
+                            </div>
+                            
+                            <div class="table-row">
+                                <span class="account-name">Zeta API Server</span>
+                                <span class="opportunity">https://api.zeta.com</span>
+                                <span class="deal-size security-score-medium">78.3</span>
+                                <div class="vulnerability-mini-chart">
+                                    <canvas id="miniChart5" width="40" height="40"></canvas>
+                                </div>
+                                <div class="approvers">
+                                    <img src="https://via.placeholder.com/24x24/84CC16/FFFFFF?text=I" alt="I">
+                                </div>
+                            </div>
+                            
+                            <div class="table-row">
+                                <span class="account-name">Bezel Mobile App</span>
+                                <span class="opportunity">https://app.bezel.com</span>
+                                <span class="deal-size security-score-low">65.8</span>
+                                <div class="vulnerability-mini-chart">
+                                    <canvas id="miniChart6" width="40" height="40"></canvas>
+                                </div>
+                                <div class="approvers">
+                                    <img src="https://via.placeholder.com/24x24/EC4899/FFFFFF?text=J" alt="J">
+                                    <img src="https://via.placeholder.com/24x24/06B6D4/FFFFFF?text=K" alt="K">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
         // Supabaseの設定
         const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
-        
-        console.log('Using Supabase URL:', supabaseUrl);
         
         // Cookie関連のヘルパー関数
         function setCookie(name, value, days) {
@@ -369,7 +410,7 @@
             document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
         }
         
-        // Supabaseクライアントの初期化（Cookieストレージ使用）
+        // Supabaseクライアントの初期化
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
             auth: {
                 persistSession: true,
@@ -377,830 +418,282 @@
                 detectSessionInUrl: false,
                 storageKey: 'sb-session-cookie',
                 storage: {
-                    getItem: (key) => {
-                        const value = getCookie(key);
-                        console.log('Getting cookie:', key, value ? 'exists' : 'not found');
-                        return value;
-                    },
-                    setItem: (key, value) => {
-                        console.log('Setting cookie:', key);
-                        setCookie(key, value, 7); // 7日間有効なCookie
-                    },
-                    removeItem: (key) => {
-                        console.log('Removing cookie:', key);
-                        removeCookie(key);
-                    }
+                    getItem: (key) => getCookie(key),
+                    setItem: (key, value) => setCookie(key, value, 7),
+                    removeItem: (key) => removeCookie(key)
                 }
             }
         });
 
-        // セッションチェック
-        async function checkSession() {
+        // ユーザーメニューの表示/非表示
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // ベントメニューの表示/非表示
+        function toggleBentoMenu() {
+            const dropdown = document.getElementById('bentoDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // ダッシュボード機能
+        function viewProject(id) {
+            window.location.href = `projects.html?id=${id}`;
+        }
+
+        function startScan(id) {
+            window.location.href = `vulnerability-scan.html?project=${id}`;
+        }
+
+        function viewAnalytics() {
+            window.location.href = 'analysis.html';
+        }
+
+        function generateReport() {
+            window.location.href = 'reports.html';
+        }
+
+        function openSettings() {
+            window.location.href = 'settings.html';
+        }
+
+        // ログアウト機能
+        async function logout() {
             try {
-                console.log('セッションをチェック中...');
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                // Cookieをクリア
+                removeCookie('sb-session-cookie');
+                
+                // ログインページにリダイレクト
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('ログアウトエラー:', error);
+                alert('ログアウト中にエラーが発生しました');
+            }
+        }
+
+        // 認証チェック
+        async function checkAuth() {
+            try {
                 const { data, error } = await supabase.auth.getSession();
                 
-                if (error) {
-                    console.error('セッションの取得に失敗しました:', error);
-                    redirectToLogin();
-                    return null;
-                }
-                
-                console.log('セッションデータ:', data);
-
-                if (!data.session) {
-                    console.log('セッションがありません。ログインページへリダイレクト');
-                    redirectToLogin();
-                    return null;
-                }
-                
-                return data.session;
-            } catch (e) {
-                console.error('セッションチェック中にエラーが発生しました:', e);
-                redirectToLogin();
-                return null;
-            }
-        }
-
-        // ログインページへリダイレクト
-        function redirectToLogin() {
-            console.log('ログインページへリダイレクト');
-            window.location.href = 'login.html';
-        }
-
-        // ユーザー情報の表示
-        function displayUserInfo(user) {
-            if (!user) {
-                console.error('ユーザー情報が存在しません');
-                return;
-            }
-
-            console.log('表示するユーザー情報:', user);
-
-            // ユーザーのメールアドレスを表示
-            const userEmailElements = document.querySelectorAll('#user-email, #welcome-user-email');
-            userEmailElements.forEach(element => {
-                if (element) {
-                    element.textContent = user.email;
-                }
-            });
-
-            // ユーザーの詳細情報を表示
-            const userDetailsElement = document.getElementById('user-details');
-            if (userDetailsElement) {
-                userDetailsElement.innerHTML = `
-                    <p><strong>ユーザーID:</strong> ${user.id}</p>
-                    <p><strong>メールアドレス:</strong> ${user.email}</p>
-                    <p><strong>最終更新:</strong> ${new Date(user.updated_at || user.created_at).toLocaleString()}</p>
-                `;
-            }
-        }
-
-        // 統計情報を更新する関数
-        async function updateStatistics(userId) {
-            try {
-                // プロジェクト数の取得
-                const { data: projectsData, error: projectsError } = await supabase
-                    .from('projects')
-                    .select('id, status')
-                    .eq('user_id', userId);
-                
-                if (projectsError) throw projectsError;
-                
-                // 統計情報の計算
-                const totalProjects = projectsData ? projectsData.length : 0;
-                
-                // 統計情報の表示を更新
-                document.getElementById('total-projects-count').textContent = totalProjects;
-                
-                // 他の統計情報も将来的に追加可能
-                
-                console.log('統計情報を更新しました:', { totalProjects });
-            } catch (error) {
-                console.error('統計情報の更新中にエラーが発生しました:', error);
-            }
-        }
-
-        // ページ初期化
-        async function initDashboard() {
-            const session = await checkSession();
-            if (session) {
-                const user = session.user;
-                displayUserInfo(user);
-                setupLogoutButton();
-                setupDashboardUI();
-                
-                // プロジェクト一覧を読み込む
-                await loadUserProjects(user.id);
-                
-                // 統計情報を更新
-                await updateStatistics(user.id);
-                
-                // 更新ボタンのイベントリスナーを設定
-                const refreshBtn = document.getElementById('refresh-projects-btn');
-                if (refreshBtn) {
-                    refreshBtn.addEventListener('click', async () => {
-                        await loadUserProjects(user.id);
-                        await updateStatistics(user.id);
-                    });
-                }
-            }
-        }
-
-        // ログアウトボタンの設定
-        function setupLogoutButton() {
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', async function() {
-                    try {
-                        const { error } = await supabase.auth.signOut();
-                        
-                        if (error) {
-                            throw error;
-                        }
-                        
-                        console.log('ログアウト成功');
-                        redirectToLogin();
-                        
-                    } catch (error) {
-                        console.error('ログアウト中にエラーが発生しました:', error);
-                        alert(`ログアウトに失敗しました: ${error.message}`);
-                    }
-                });
-            }
-        }
-
-        // ダッシュボードUIの設定
-        function setupDashboardUI() {
-            // サイドバーナビゲーションの設定
-            const navItems = document.querySelectorAll('.sidebar-nav li a');
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // アクティブなナビアイテムを更新
-                    navItems.forEach(nav => nav.parentElement.classList.remove('active'));
-                    this.parentElement.classList.add('active');
-                    
-                    // 対応するセクションを表示
-                    const targetId = this.getAttribute('href').slice(1);
-                    const sections = document.querySelectorAll('.content-section');
-                    sections.forEach(section => {
-                        section.classList.remove('active');
-                        if (section.id === targetId + '-section') {
-                            section.classList.add('active');
-                        }
-                    });
-                    
-                    // ヘッダータイトルを更新
-                    const headerTitle = document.querySelector('.dashboard-header h1');
-                    if (headerTitle) {
-                        headerTitle.textContent = this.textContent.trim();
-                    }
-                });
-            });
-        }
-
-        // ユーザーのプロジェクト一覧を読み込む関数
-        async function loadUserProjects(userId) {
-            if (!userId) {
-                console.warn('ユーザーIDが指定されていないためプロジェクト一覧を読み込めません');
-                return;
-            }
-            
-            const ongoingContainer = document.getElementById('ongoingProjectsContainer');
-            if (!ongoingContainer) {
-                console.warn('プロジェクト表示用コンテナが見つかりません');
-                return;
-            }
-            
-            // ローディング表示
-            ongoingContainer.innerHTML = '<div class="loading-projects"><i class="fas fa-spinner fa-spin"></i> プロジェクトを読み込み中...</div>';
-            
-            try {
-                console.log(`ユーザーID: ${userId} のプロジェクト一覧を取得中...`);
-                
-                // プロジェクト一覧を取得
-                const { data, error } = await supabase
-                    .from('projects')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .order('created_at', { ascending: false });
-                
-                if (error) {
-                    console.error('プロジェクト一覧取得エラー:', error);
-                    throw error;
-                }
-                
-                console.log(`${data ? data.length : 0}件のプロジェクトを取得しました:`, data);
-                
-                // コンテナを空にする
-                ongoingContainer.innerHTML = '';
-                
-                if (!data || data.length === 0) {
-                    ongoingContainer.innerHTML = '<p class="no-projects">プロジェクトがありません。新規プロジェクトを作成してください。</p>';
+                if (error || !data.session) {
+                    window.location.href = 'login.html';
                     return;
                 }
                 
-                // プロジェクトカードを作成
-                data.forEach(project => {
-                    const projectCard = createProjectCard(project);
-                    ongoingContainer.appendChild(projectCard);
-                });
-            } catch (error) {
-                console.error('プロジェクト読み込みエラー:', error);
-                ongoingContainer.innerHTML = '<p class="error">プロジェクトの読み込み中にエラーが発生しました。</p>';
-            }
-        }
-
-        // プロジェクトカードを作成する関数
-        function createProjectCard(project) {
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            card.setAttribute('data-project-id', project.id);
-            
-            // ステータスに応じたクラスを追加
-            const statusClass = getStatusClass(project.status);
-            
-            // プログレスバーの表示
-            const progressWidth = project.progress || 0;
-            
-            card.innerHTML = `
-                <div class="project-header">
-                    <div class="project-title">${escapeHtml(project.name)}</div>
-                    <div class="project-status ${statusClass}">${getStatusText(project.status)}</div>
-                </div>
-                <div class="project-details">
-                    <div><i class="fas fa-globe"></i> ${escapeHtml(project.target_url)}</div>
-                    <div><i class="fas fa-clock"></i> 作成: ${new Date(project.created_at).toLocaleString()}</div>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progressWidth}%;"></div>
-                    </div>
-                    <div class="progress-stats">
-                        <div>進捗: ${progressWidth}%</div>
-                        <div>${getEstimatedTimeRemaining(project)}</div>
-                    </div>
-                </div>
-                <div class="project-actions">
-                    <button class="btn btn-sm btn-view-details" data-project-id="${project.id}">詳細を表示</button>
-                    ${project.status === 'running' ? '<button class="btn btn-sm btn-cancel" data-project-id="' + project.id + '">中止</button>' : ''}
-                </div>
-            `;
-            
-            // イベントリスナーの追加
-            const viewButton = card.querySelector('.btn-view-details');
-            viewButton.addEventListener('click', () => {
-                showProjectDetails(project.id);
-            });
-            
-            const cancelButton = card.querySelector('.btn-cancel');
-            if (cancelButton) {
-                cancelButton.addEventListener('click', () => {
-                    cancelProject(project.id);
-                });
-            }
-            
-            return card;
-        }
-
-        // HTMLエスケープ関数
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text
-                .toString()
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        // ステータスに応じたクラスを取得
-        function getStatusClass(status) {
-            switch (status) {
-                case 'pending': return 'status-pending';
-                case 'running': return 'status-running';
-                case 'completed': return 'status-completed';
-                case 'failed': return 'status-failed';
-                case 'cancelled': return 'status-cancelled';
-                default: return '';
-            }
-        }
-
-        // ステータスに応じたテキストを取得
-        function getStatusText(status) {
-            switch (status) {
-                case 'pending': return '準備完了';
-                case 'running': return '実行中';
-                case 'completed': return '完了';
-                case 'failed': return '失敗';
-                case 'cancelled': return 'キャンセル';
-                default: return status;
-            }
-        }
-
-        // 予想残り時間を取得
-        function getEstimatedTimeRemaining(project) {
-            if (project.status === 'completed') {
-                return '完了';
-            }
-            
-            if (project.status === 'failed' || project.status === 'cancelled') {
-                return '-';
-            }
-            
-            if (project.status === 'pending') {
-                return '未開始';
-            }
-            
-            // 簡易的な残り時間計算（実際には正確なアルゴリズムが必要）
-            const progress = project.progress || 0;
-            if (progress === 0) return '計算中...';
-            
-            const remaining = 100 - progress;
-            if (remaining <= 10) return '残り僅か';
-            if (remaining <= 30) return '残り数分';
-            return '約15分';
-        }
-
-        // プロジェクト詳細を表示
-        async function showProjectDetails(projectId) {
-            console.log('プロジェクト詳細を表示:', projectId);
-            
-            try {
-                // プロジェクトデータを取得
-                const { data: project, error } = await supabase
-                    .from('projects')
-                    .select('*')
-                    .eq('id', projectId)
-                    .single();
-                
-                if (error) {
-                    console.error('プロジェクト取得エラー:', error);
-                    throw error;
-                }
-                
-                if (!project) {
-                    throw new Error('プロジェクトが見つかりません');
-                }
-                
-                console.log('取得したプロジェクト詳細:', project);
-                
-                // プロジェクト詳細画面に切り替え
-                const sections = document.querySelectorAll('.content-section');
-                sections.forEach(section => {
-                    section.classList.remove('active');
-                });
-                
-                const projectSection = document.getElementById('project-section');
-                if (projectSection) {
-                    projectSection.classList.add('active');
-                }
-                
-                // プロジェクトタイトルを設定
-                const projectTitle = document.getElementById('project-title');
-                if (projectTitle) {
-                    projectTitle.textContent = project.name;
-                }
-                
-                // ダッシュボードヘッダーのタイトルを更新
-                const headerTitle = document.querySelector('.dashboard-header h1');
-                if (headerTitle) {
-                    headerTitle.textContent = 'プロジェクト詳細';
-                }
-                
-                // プロジェクト情報を表示
-                displayProjectInfo(project);
-                
-                // ダッシュボードに戻るボタンのイベントリスナーを設定
-                const backButton = document.getElementById('back-to-dashboard');
-                if (backButton) {
-                    // 既存のイベントリスナーを削除
-                    const newBackButton = backButton.cloneNode(true);
-                    backButton.parentNode.replaceChild(newBackButton, backButton);
-                    
-                    // 新しいイベントリスナーを追加
-                    newBackButton.addEventListener('click', function() {
-                        // ダッシュボードに戻る
-                        document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
-                    });
-                }
+                // ユーザー情報を表示
+                const userEmail = data.session.user.email;
+                document.getElementById('user-email').textContent = userEmail;
+                document.getElementById('user-name').textContent = userEmail.split('@')[0];
                 
             } catch (error) {
-                console.error('プロジェクト詳細表示エラー:', error);
-                alert('プロジェクト詳細の表示中にエラーが発生しました: ' + error.message);
-                // エラー時はダッシュボードに戻る
-                document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
-            }
-        }
-        
-        // プロジェクト情報を表示
-        function displayProjectInfo(project) {
-            const infoContainer = document.querySelector('.project-details-info');
-            if (!infoContainer) return;
-            
-            const scanTypeDisplay = getScanTypeDisplay(project.scan_type);
-            const scanOptionsDisplay = getScanOptionsDisplay(project.scan_options);
-            
-            infoContainer.innerHTML = `
-                <div class="info-group">
-                    <div class="info-label">プロジェクト名:</div>
-                    <div class="info-value">${escapeHtml(project.name)}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">対象URL:</div>
-                    <div class="info-value"><a href="${escapeHtml(project.target_url)}" target="_blank">${escapeHtml(project.target_url)}</a></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">ステータス:</div>
-                    <div class="info-value"><span class="status-badge ${getStatusClass(project.status)}">${getStatusText(project.status)}</span></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">作成日時:</div>
-                    <div class="info-value">${new Date(project.created_at).toLocaleString()}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">スキャンタイプ:</div>
-                    <div class="info-value">${scanTypeDisplay}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">スキャンオプション:</div>
-                    <div class="info-value">${scanOptionsDisplay}</div>
-                </div>
-            `;
-            
-            // スキャン開始ボタンの状態を設定
-            const startScanBtn = document.getElementById('start-scan-btn');
-            if (startScanBtn) {
-                if (project.status === 'pending') {
-                    startScanBtn.disabled = false;
-                    startScanBtn.innerHTML = '<i class="fas fa-play"></i> スキャンを実行';
-                    
-                    // イベントリスナーを設定
-                    startScanBtn.onclick = async function() {
-                        await startProjectScan(project.id);
-                    };
-                } else {
-                    startScanBtn.disabled = true;
-                    startScanBtn.innerHTML = '<i class="fas fa-check"></i> スキャン実行済み';
-                }
-            }
-        }
-        
-        // スキャンタイプの表示テキストを取得
-        function getScanTypeDisplay(type) {
-            switch(type) {
-                case 'quick': return 'クイックスキャン';
-                case 'full': return 'フルスキャン';
-                case 'custom': return 'カスタムスキャン';
-                default: return type || '不明';
-            }
-        }
-        
-        // スキャンオプションの表示テキストを取得
-        function getScanOptionsDisplay(options) {
-            if (!options || !Array.isArray(options) || options.length === 0) {
-                return 'なし';
-            }
-            
-            const optionMap = {
-                'xss': 'XSS検査',
-                'sqli': 'SQLインジェクション検査',
-                'csrf': 'CSRF検査',
-                'openredirect': 'オープンリダイレクト検査'
-            };
-            
-            return options.map(opt => optionMap[opt] || opt).join('、');
-        }
-
-        // プロジェクトスキャンを開始
-        async function startProjectScan(projectId) {
-            try {
-                console.log('プロジェクトスキャンを開始します:', projectId);
-                
-                // スキャン開始ボタンを無効化
-                const startScanBtn = document.getElementById('start-scan-btn');
-                if (startScanBtn) {
-                    startScanBtn.disabled = true;
-                    startScanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> スキャン開始中...';
-                }
-                
-                // プロジェクトのステータスを更新
-                const { error } = await supabase
-                    .from('projects')
-                    .update({ 
-                        status: 'running', 
-                        updated_at: new Date().toISOString(),
-                        progress: 5 // 初期進捗5%
-                    })
-                    .eq('id', projectId);
-                
-                if (error) {
-                    throw new Error('スキャン開始エラー: ' + error.message);
-                }
-                
-                console.log('スキャンが正常に開始されました');
-                
-                // 画面を進捗タブに切り替え
-                const { data: project } = await supabase
-                    .from('projects')
-                    .select('*')
-                    .eq('id', projectId)
-                    .single();
-                
-                if (project) {
-                    // 進捗表示を開始
-                    simulateProgress(projectId);
-                }
-                
-            } catch (error) {
-                console.error('スキャン開始中にエラーが発生しました:', error);
-                alert('スキャン開始に失敗しました: ' + error.message);
-                
-                // スキャン開始ボタンを元に戻す
-                const startScanBtn = document.getElementById('start-scan-btn');
-                if (startScanBtn) {
-                    startScanBtn.disabled = false;
-                    startScanBtn.innerHTML = '<i class="fas fa-play"></i> スキャンを実行';
-                }
-            }
-        }
-        
-        // 進捗シミュレーション（実際はバックエンドからの更新を受け取るべき）
-        function simulateProgress(projectId) {
-            console.log('進捗シミュレーションを開始します', projectId);
-            
-            let progress = 5;
-            const interval = setInterval(async () => {
-                progress += Math.floor(Math.random() * 10) + 1;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    
-                    // プロジェクトを完了状態に設定
-                    await supabase
-                        .from('projects')
-                        .update({ 
-                            status: 'completed', 
-                            updated_at: new Date().toISOString(),
-                            progress: 100
-                        })
-                        .eq('id', projectId);
-                    
-                    console.log('スキャンが完了しました');
-                } else {
-                    // 進捗のみ更新
-                    await supabase
-                        .from('projects')
-                        .update({ 
-                            progress: progress,
-                            updated_at: new Date().toISOString() 
-                        })
-                        .eq('id', projectId);
-                }
-                
-                // 画面の進捗表示を更新
-                updateProgressDisplay(projectId, progress);
-                
-            }, 3000); // 3秒ごとに更新
-        }
-        
-        // 進捗表示の更新
-        async function updateProgressDisplay(projectId, progress) {
-            console.log(`プロジェクト ${projectId} の進捗を更新: ${progress}%`);
-            
-            // プロジェクト情報を再取得
-            const { data: project } = await supabase
-                .from('projects')
-                .select('*')
-                .eq('id', projectId)
-                .single();
-            
-            if (project) {
-                // 進捗表示を更新
-                const progressBar = document.querySelector('.project-progress-bar .progress-fill');
-                if (progressBar) {
-                    progressBar.style.width = `${progress}%`;
-                }
-                
-                const progressText = document.querySelector('.project-progress-percentage');
-                if (progressText) {
-                    progressText.textContent = `${progress}%`;
-                }
-                
-                // ステータスが変わった場合は表示を更新
-                if (project.status === 'completed' && progress === 100) {
-                    const statusElement = document.querySelector('.project-progress-status');
-                    if (statusElement) {
-                        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> スキャンが完了しました';
-                        statusElement.className = 'project-progress-status completed';
-                    }
-                }
+                console.error('認証チェックエラー:', error);
+                window.location.href = 'login.html';
             }
         }
 
-        // プロジェクトをキャンセル
-        async function cancelProject(projectId) {
-            if (!confirm('本当にこのプロジェクトをキャンセルしますか？')) {
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('projects')
-                    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
-                    .eq('id', projectId);
-                
-                if (error) {
-                    console.error('プロジェクトキャンセルエラー:', error);
-                    throw error;
-                }
-                
-                console.log('プロジェクトがキャンセルされました:', projectId);
-                
-                // セッション情報を取得してユーザーIDを抽出
-                const { data } = await supabase.auth.getSession();
-                if (data.session) {
-                    // プロジェクト一覧を更新
-                    await loadUserProjects(data.session.user.id);
-                }
-            } catch (error) {
-                console.error('プロジェクトキャンセルエラー:', error);
-                alert('プロジェクトのキャンセル中にエラーが発生しました。');
-            }
-        }
-
-        // ページ読み込み時に初期化
-        document.addEventListener('DOMContentLoaded', initDashboard);
-
-        // プロジェクト作成成功時の処理を強化
-        function showProjectCreationSuccess() {
-            const successIndicator = document.getElementById('project-success-indicator');
-            if (successIndicator) {
-                successIndicator.style.display = 'block';
-                
-                // デバッグモードの時はログにも出力
-                if (window.debugTools && window.debugTools.isDebugMode()) {
-                    window.debugTools.log('プロジェクト作成が成功しました');
-                }
-                
-                // 3秒後にダッシュボードに戻る
-                setTimeout(() => {
-                    successIndicator.style.display = 'none';
-                    document.querySelector('.sidebar-nav li a[href="#dashboard"]').click();
-                }, 3000);
-            }
-        }
-        
-        // プロジェクト作成前の処理を強化
-        function validateNewProjectForm() {
-            const projectNameInput = document.getElementById('project-name');
-            const targetUrlInput = document.getElementById('target-url');
-            
-            // 入力値の検証
-            if (!projectNameInput.value.trim()) {
-                alert('プロジェクト名を入力してください');
-                projectNameInput.focus();
-                return false;
-            }
-            
-            if (!targetUrlInput.value.trim()) {
-                alert('対象URLを入力してください');
-                targetUrlInput.focus();
-                return false;
-            }
-            
-            // URLの検証
-            try {
-                new URL(targetUrlInput.value);
-            } catch (e) {
-                alert('有効なURLを入力してください (例: https://example.com)');
-                targetUrlInput.focus();
-                return false;
-            }
-            
-            // デバッグモードの時は検証OKのログを出力
-            if (window.debugTools && window.debugTools.isDebugMode()) {
-                window.debugTools.log('フォーム検証成功', {
-                    projectName: projectNameInput.value,
-                    targetUrl: targetUrlInput.value
-                });
-            }
-            
-            return true;
-        }
-        
-        // 拡張イベントリスナー
+        // ページ読み込み時の初期化
         document.addEventListener('DOMContentLoaded', function() {
-            // 新規プロジェクトフォームの拡張
-            const newScanForm = document.getElementById('new-scan-form');
-            if (newScanForm) {
-                newScanForm.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    
-                    // フォーム検証
-                    if (!validateNewProjectForm()) {
-                        return;
+            checkAuth();
+            initCharts();
+            initMenus();
+        });
+
+        // チャートの初期化
+        function initCharts() {
+            // 上部の脆弱性分布ドーナツチャート
+            const vulnTopCtx = document.getElementById('vulnerabilityChartTop').getContext('2d');
+            new Chart(vulnTopCtx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [135, 643, 2069],
+                        backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
-                    
-                    // プロジェクト名とターゲットURLを取得
-                    const projectName = document.getElementById('project-name').value;
-                    const targetUrl = document.getElementById('target-url').value;
-                    
-                    // スキャンタイプの取得
-                    const scanType = document.querySelector('.scan-type-option.selected').getAttribute('data-type');
-                    
-                    // スキャンオプションの取得
-                    const scanOptions = [];
-                    document.querySelectorAll('.scan-option-card.selected').forEach(option => {
-                        scanOptions.push(option.getAttribute('data-option'));
-                    });
-                    
-                    // デバッグ情報
-                    if (window.debugTools && window.debugTools.isDebugMode()) {
-                        window.debugTools.log('プロジェクト作成開始', {
-                            name: projectName,
-                            url: targetUrl,
-                            type: scanType,
-                            options: scanOptions
-                        });
-                    }
-                    
-                    // プロジェクト作成ボタンを無効化
-                    const submitButton = this.querySelector('button[type="submit"]');
-                    submitButton.disabled = true;
-                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 作成中...';
-                    
-                    try {
-                        // ユーザーセッションを確認
-                        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-                        
-                        if (sessionError) {
-                            throw new Error('セッション取得エラー: ' + sessionError.message);
+                }
+            });
+
+            // ミニチャート用のデータ
+            const miniChartData = [
+                [5, 12, 23], // Alpha Corp
+                [8, 15, 18], // Zeta API
+                [15, 20, 12], // Bezel Mobile
+                [5, 12, 23], // Alpha Corp (repeat)
+                [8, 15, 18], // Zeta API (repeat)
+                [15, 20, 12]  // Bezel Mobile (repeat)
+            ];
+
+            // 各システムのミニチャートを作成
+            miniChartData.forEach((data, index) => {
+                const ctx = document.getElementById(`miniChart${index + 1}`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: data,
+                            backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
+                            borderWidth: 0,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        const labels = ['高リスク', '中リスク', '低リスク'];
+                                        return labels[context.dataIndex] + ': ' + context.parsed + '件';
+                                    }
+                                }
+                            }
                         }
-                        
-                        if (!sessionData.session) {
-                            throw new Error('有効なセッションがありません。再ログインしてください。');
-                        }
-                        
-                        const userId = sessionData.session.user.id;
-                        
-                        // デバッグ情報
-                        if (window.debugTools && window.debugTools.isDebugMode()) {
-                            window.debugTools.log('ユーザーID取得成功', userId);
-                        }
-                        
-                        // 新規プロジェクトデータ
-                        const projectData = {
-                            user_id: userId,
-                            name: projectName,
-                            target_url: targetUrl,
-                            scan_type: scanType,
-                            scan_options: scanOptions,
-                            status: 'pending',
-                            progress: 0,
-                            created_at: new Date().toISOString()
-                        };
-                        
-                        // デバッグモードの場合はデータを表示
-                        if (window.debugTools && window.debugTools.isDebugMode()) {
-                            window.debugTools.logDb('insert', 'projects', projectData);
-                        }
-                        
-                        // データベースにプロジェクトを作成
-                        const { data, error } = await supabase
-                            .from('projects')
-                            .insert([projectData])
-                            .select();
-                        
-                        if (error) {
-                            throw new Error('プロジェクト作成エラー: ' + error.message);
-                        }
-                        
-                        // 成功処理
-                        console.log('プロジェクトが正常に作成されました:', data);
-                        
-                        // フォームをリセット
-                        this.reset();
-                        
-                        // 成功表示
-                        showProjectCreationSuccess();
-                        
-                    } catch (error) {
-                        console.error('プロジェクト作成中にエラーが発生しました:', error);
-                        alert(error.message || 'プロジェクト作成に失敗しました。もう一度お試しください。');
-                    } finally {
-                        // ボタンを再度有効化
-                        submitButton.disabled = false;
-                        submitButton.innerHTML = 'プロジェクト作成';
                     }
                 });
-            }
-        });
+            });
+
+            // スキャン統計棒グラフ
+            const scanStatsCtx = document.getElementById('scanStatsChart').getContext('2d');
+            new Chart(scanStatsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '実行スキャン',
+                        data: [210, 300, 120, 220, 180, 130],
+                        backgroundColor: '#3B82F6',
+                        borderRadius: {
+                            topLeft: 0,
+                            topRight: 0,
+                            bottomLeft: 4,
+                            bottomRight: 4
+                        },
+                        borderWidth: 0,
+                        barThickness: 40
+                    }, {
+                        label: '検出脆弱性',
+                        data: [80, 60, 30, 70, 20, 70],
+                        backgroundColor: '#EC4899',
+                        borderRadius: {
+                            topLeft: 4,
+                            topRight: 4,
+                            bottomLeft: 0,
+                            bottomRight: 0
+                        },
+                        borderWidth: 0,
+                        barThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#1F2937',
+                            titleColor: '#F9FAFB',
+                            bodyColor: '#F9FAFB',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label;
+                                    const value = context.parsed.y;
+                                    return label + ': ' + value + ' 件';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#9CA3AF',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 400,
+                            grid: {
+                                color: '#E5E7EB',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#9CA3AF',
+                                font: {
+                                    size: 11
+                                },
+                                stepSize: 100
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // メニューの初期化
+        function initMenus() {
+            // ベントメニューの切り替え
+            const bentoMenuBtn = document.getElementById('bento-menu-btn');
+            const bentoDropdown = document.getElementById('bento-dropdown');
+
+            bentoMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                bentoDropdown.classList.toggle('show');
+                // ユーザードロップダウンを閉じる
+                document.getElementById('userDropdown').classList.remove('show');
+            });
+
+            // ユーザーメニューの切り替え
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const userDropdown = document.getElementById('userDropdown');
+
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+                // ベントドロップダウンを閉じる
+                bentoDropdown.classList.remove('show');
+            });
+
+            // 外部クリックでドロップダウンを閉じる
+            document.addEventListener('click', () => {
+                userDropdown.classList.remove('show');
+                bentoDropdown.classList.remove('show');
+            });
+        }
     </script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/debug.js"></script>
 </body>
 </html> 

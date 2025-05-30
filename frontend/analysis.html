@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析 - FEARLOCK</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+</head>
+<body class="camuquotes-body">
+    <!-- トップヘッダー -->
+    <header class="top-header">
+        <div class="header-container">
+            <div class="header-left">
+                <button class="bento-menu-btn" onclick="toggleBentoMenu()">
+                    <div class="bento-grid">
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                        <div class="bento-dot"></div>
+                    </div>
+                </button>
+                <div class="logo-section">
+                    <i class="fas fa-shield-alt logo-icon"></i>
+                    <span class="logo-text">FEARLOCK</span>
+                </div>
+            </div>
+            
+            <nav class="top-nav">
+                <a href="dashboard.html" class="nav-item">ダッシュボード</a>
+                <a href="projects.html" class="nav-item">プロジェクト</a>
+                <a href="vulnerability-scan.html" class="nav-item">脆弱性スキャン</a>
+                <a href="analysis.html" class="nav-item active">分析</a>
+                <a href="reports.html" class="nav-item">レポート</a>
+                <a href="settings.html" class="nav-item">設定</a>
+            </nav>
+            
+            <div class="header-right">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button class="help-btn">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="settings-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-avatar" onclick="toggleUserMenu()">
+                        <img src="https://via.placeholder.com/32x32/4B45A9/FFFFFF?text=U" alt="User Avatar">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-info">
+                            <div class="user-name" id="user-name">ユーザー</div>
+                            <div class="user-email" id="user-email">user@example.com</div>
+                        </div>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            プロフィール
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            設定
+                        </a>
+                        <hr class="dropdown-divider">
+                        <button class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            ログアウト
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ベントメニュードロップダウン -->
+        <div class="bento-dropdown" id="bentoDropdown">
+            <div class="bento-dropdown-content">
+                <div class="bento-apps-grid">
+                    <a href="dashboard.html" class="bento-app-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="projects.html" class="bento-app-item">
+                        <i class="fas fa-folder"></i>
+                        <span>プロジェクト</span>
+                    </a>
+                    <a href="vulnerability-scan.html" class="bento-app-item">
+                        <i class="fas fa-search"></i>
+                        <span>脆弱性スキャン</span>
+                    </a>
+                    <a href="analysis.html" class="bento-app-item active">
+                        <i class="fas fa-chart-line"></i>
+                        <span>分析</span>
+                    </a>
+                    <a href="reports.html" class="bento-app-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>レポート</span>
+                    </a>
+                    <a href="settings.html" class="bento-app-item">
+                        <i class="fas fa-cog"></i>
+                        <span>設定</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- ページヘッダー -->
+            <div class="page-header">
+                <h1>分析</h1>
+                <div class="header-actions">
+                    <select class="filter-select" id="timeRangeFilter">
+                        <option value="7d">過去7日間</option>
+                        <option value="30d" selected>過去30日間</option>
+                        <option value="90d">過去90日間</option>
+                        <option value="1y">過去1年間</option>
+                    </select>
+                    <button class="btn btn-outline" onclick="exportAnalysis()">
+                        <i class="fas fa-download"></i>
+                        エクスポート
+                    </button>
+                </div>
+            </div>
+
+            <!-- 分析サマリー -->
+            <div class="analysis-summary">
+                <div class="summary-card">
+                    <div class="summary-icon trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number">+15%</div>
+                        <div class="summary-label">脆弱性検出率</div>
+                        <div class="summary-change">前月比</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number">-8%</div>
+                        <div class="summary-label">修正時間</div>
+                        <div class="summary-change">前月比</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon trend-up">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number">92%</div>
+                        <div class="summary-label">セキュリティスコア</div>
+                        <div class="summary-change">+3% 向上</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon trend-neutral">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="summary-content">
+                        <div class="summary-number">2.3日</div>
+                        <div class="summary-label">平均修正時間</div>
+                        <div class="summary-change">前月と同等</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- チャートセクション -->
+            <div class="charts-section">
+                <!-- 脆弱性トレンド -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>脆弱性検出トレンド</h3>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" onclick="switchChart('trend', 'monthly')">月別</button>
+                            <button class="chart-btn" onclick="switchChart('trend', 'weekly')">週別</button>
+                            <button class="chart-btn" onclick="switchChart('trend', 'daily')">日別</button>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="vulnerabilityTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 脆弱性分布 -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>脆弱性重要度分布</h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-color critical"></span>
+                                <span>緊急</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color high"></span>
+                                <span>高</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color medium"></span>
+                                <span>中</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color low"></span>
+                                <span>低</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="vulnerabilityDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プロジェクト別分析 -->
+            <div class="project-analysis-section">
+                <h2>プロジェクト別分析</h2>
+                <div class="project-analysis-grid">
+                    <div class="project-analysis-card">
+                        <div class="project-header">
+                            <div class="project-info">
+                                <h3>Alpha Corp. Webサイト</h3>
+                                <span class="project-url">https://alpha-corp.com</span>
+                            </div>
+                            <div class="project-score high">
+                                <span class="score-value">85</span>
+                                <span class="score-label">スコア</span>
+                            </div>
+                        </div>
+                        <div class="project-metrics">
+                            <div class="metric">
+                                <span class="metric-label">総脆弱性</span>
+                                <span class="metric-value">27</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">修正済み</span>
+                                <span class="metric-value">19</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">未修正</span>
+                                <span class="metric-value">8</span>
+                            </div>
+                        </div>
+                        <div class="project-chart">
+                            <canvas id="alphaChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="project-analysis-card">
+                        <div class="project-header">
+                            <div class="project-info">
+                                <h3>Zeta API Server</h3>
+                                <span class="project-url">https://api.zeta.com</span>
+                            </div>
+                            <div class="project-score medium">
+                                <span class="score-value">72</span>
+                                <span class="score-label">スコア</span>
+                            </div>
+                        </div>
+                        <div class="project-metrics">
+                            <div class="metric">
+                                <span class="metric-label">総脆弱性</span>
+                                <span class="metric-value">25</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">修正済み</span>
+                                <span class="metric-value">15</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">未修正</span>
+                                <span class="metric-value">10</span>
+                            </div>
+                        </div>
+                        <div class="project-chart">
+                            <canvas id="zetaChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="project-analysis-card">
+                        <div class="project-header">
+                            <div class="project-info">
+                                <h3>Bezel Mobile App</h3>
+                                <span class="project-url">https://app.bezel.com</span>
+                            </div>
+                            <div class="project-score low">
+                                <span class="score-value">58</span>
+                                <span class="score-label">スコア</span>
+                            </div>
+                        </div>
+                        <div class="project-metrics">
+                            <div class="metric">
+                                <span class="metric-label">総脆弱性</span>
+                                <span class="metric-value">42</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">修正済み</span>
+                                <span class="metric-value">18</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">未修正</span>
+                                <span class="metric-value">24</span>
+                            </div>
+                        </div>
+                        <div class="project-chart">
+                            <canvas id="bezelChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 脆弱性タイプ分析 -->
+            <div class="vulnerability-types-section">
+                <h2>脆弱性タイプ別分析</h2>
+                <div class="vulnerability-types-table">
+                    <div class="table-header">
+                        <div>脆弱性タイプ</div>
+                        <div>検出数</div>
+                        <div>修正率</div>
+                        <div>平均修正時間</div>
+                        <div>トレンド</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="vuln-type">
+                            <i class="fas fa-database vuln-icon"></i>
+                            <span>SQLインジェクション</span>
+                        </div>
+                        <div class="vuln-count">15</div>
+                        <div class="fix-rate">
+                            <div class="progress-bar small">
+                                <div class="progress-fill" style="width: 80%"></div>
+                            </div>
+                            <span>80%</span>
+                        </div>
+                        <div class="fix-time">2.1日</div>
+                        <div class="trend">
+                            <i class="fas fa-arrow-down trend-down"></i>
+                            <span>-12%</span>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="vuln-type">
+                            <i class="fas fa-code vuln-icon"></i>
+                            <span>XSS</span>
+                        </div>
+                        <div class="vuln-count">23</div>
+                        <div class="fix-rate">
+                            <div class="progress-bar small">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                            <span>65%</span>
+                        </div>
+                        <div class="fix-time">1.8日</div>
+                        <div class="trend">
+                            <i class="fas fa-arrow-up trend-up"></i>
+                            <span>+8%</span>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="vuln-type">
+                            <i class="fas fa-shield-alt vuln-icon"></i>
+                            <span>CSRF</span>
+                        </div>
+                        <div class="vuln-count">8</div>
+                        <div class="fix-rate">
+                            <div class="progress-bar small">
+                                <div class="progress-fill" style="width: 90%"></div>
+                            </div>
+                            <span>90%</span>
+                        </div>
+                        <div class="fix-time">1.2日</div>
+                        <div class="trend">
+                            <i class="fas fa-minus trend-neutral"></i>
+                            <span>0%</span>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="vuln-type">
+                            <i class="fas fa-key vuln-icon"></i>
+                            <span>認証・認可</span>
+                        </div>
+                        <div class="vuln-count">12</div>
+                        <div class="fix-rate">
+                            <div class="progress-bar small">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                            <span>75%</span>
+                        </div>
+                        <div class="fix-time">3.5日</div>
+                        <div class="trend">
+                            <i class="fas fa-arrow-down trend-down"></i>
+                            <span>-5%</span>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="vuln-type">
+                            <i class="fas fa-eye-slash vuln-icon"></i>
+                            <span>情報漏洩</span>
+                        </div>
+                        <div class="vuln-count">6</div>
+                        <div class="fix-rate">
+                            <div class="progress-bar small">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                            <span>100%</span>
+                        </div>
+                        <div class="fix-time">0.8日</div>
+                        <div class="trend">
+                            <i class="fas fa-arrow-up trend-up"></i>
+                            <span>+15%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Supabaseの設定
+        const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
+        
+        // Cookie関連のヘルパー関数
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            }
+            return null;
+        }
+
+        function removeCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
+        }
+        
+        // Supabaseクライアントの初期化
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: false,
+                storageKey: 'sb-session-cookie',
+                storage: {
+                    getItem: (key) => getCookie(key),
+                    setItem: (key, value) => setCookie(key, value, 7),
+                    removeItem: (key) => removeCookie(key)
+                }
+            }
+        });
+
+        // ユーザーメニューの表示/非表示
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // ベントメニューの表示/非表示
+        function toggleBentoMenu() {
+            const dropdown = document.getElementById('bentoDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // チャート切り替え
+        function switchChart(chartType, period) {
+            // ボタンのアクティブ状態を更新
+            const buttons = document.querySelectorAll('.chart-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // チャートデータを更新（実際の実装では期間に応じてデータを取得）
+            if (chartType === 'trend') {
+                updateVulnerabilityTrendChart(period);
+            }
+        }
+
+        // 分析データのエクスポート
+        function exportAnalysis() {
+            alert('分析データをエクスポートします');
+        }
+
+        // 脆弱性トレンドチャートの更新
+        function updateVulnerabilityTrendChart(period) {
+            // 期間に応じたデータの更新処理
+            console.log(`Updating chart for period: ${period}`);
+        }
+
+        // ログアウト機能
+        async function logout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                // Cookieをクリア
+                removeCookie('sb-session-cookie');
+                
+                // ログインページにリダイレクト
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('ログアウトエラー:', error);
+                alert('ログアウト中にエラーが発生しました');
+            }
+        }
+
+        // 認証チェック
+        async function checkAuth() {
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error || !data.session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // ユーザー情報を表示
+                const userEmail = data.session.user.email;
+                document.getElementById('user-email').textContent = userEmail;
+                document.getElementById('user-name').textContent = userEmail.split('@')[0];
+                
+            } catch (error) {
+                console.error('認証チェックエラー:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 外部クリックでドロップダウンを閉じる
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const bentoMenu = document.querySelector('.bento-menu-btn');
+            
+            if (!userMenu.contains(event.target)) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+            
+            if (!bentoMenu.contains(event.target)) {
+                document.getElementById('bentoDropdown').classList.remove('show');
+            }
+        });
+
+        // チャートの初期化
+        function initializeCharts() {
+            // 脆弱性トレンドチャート
+            const trendCtx = document.getElementById('vulnerabilityTrendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '検出された脆弱性',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: '修正された脆弱性',
+                        data: [8, 15, 2, 4, 1, 2],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 脆弱性分布チャート
+            const distributionCtx = document.getElementById('vulnerabilityDistributionChart').getContext('2d');
+            new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['高', '中', '低'],
+                    datasets: [{
+                        data: [12, 19, 3],
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(255, 205, 86)',
+                            'rgb(54, 162, 235)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            // プロジェクト別ミニチャート
+            const projectCharts = ['alphaChart', 'zetaChart', 'bezelChart'];
+            const projectData = [
+                [8, 19],  // Alpha: 未修正, 修正済み
+                [10, 15], // Zeta: 未修正, 修正済み
+                [24, 18]  // Bezel: 未修正, 修正済み
+            ];
+
+            projectCharts.forEach((chartId, index) => {
+                const ctx = document.getElementById(chartId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['未修正', '修正済み'],
+                        datasets: [{
+                            data: projectData[index],
+                            backgroundColor: ['#EF4444', '#10B981']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            initializeCharts();
+        });
+    </script>
+</body>
+</html> 
