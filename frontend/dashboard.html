@@ -120,151 +120,53 @@
         <div class="content-container">
             <!-- 上部セクション -->
             <div class="top-section">
-                <!-- 左側：総スキャン数概要 -->
-                <div class="overview-card">
-                    <div class="overview-header">
-                        <h2>総スキャン数</h2>
-                        <div class="time-filter">
-                            <i class="fas fa-calendar-alt"></i>
-                            <select class="time-select">
-                                <option value="all">全期間</option>
-                                <option value="today">今日</option>
-                                <option value="week">今週</option>
-                                <option value="month">今月</option>
-                                <option value="quarter">四半期</option>
-                                <option value="year">今年</option>
-                            </select>
+                <!-- 脆弱性統計カード -->
+                <div class="vulnerability-stats-grid">
+                    <div class="vuln-stat-card critical">
+                        <div class="stat-number">45</div>
+                        <div class="stat-level">緊急</div>
+                        <div class="stat-type">Critical</div>
+                        <div class="vuln-examples">
+                            <div class="vuln-example">SQLインジェクション</div>
+                            <div class="vuln-example">リモートコード実行</div>
                         </div>
                     </div>
-                    
-                    <!-- 脆弱性分布チャート -->
-                    <div class="vulnerability-distribution">
-                        <div class="chart-container-small">
-                            <div class="chart-and-stats-layout">
-                                <div class="donut-chart-wrapper-small">
-                                    <canvas id="vulnerabilityChartTop" width="120" height="120"></canvas>
-                                    <div class="chart-center-small">
-                                        <div class="center-number-small">2,847</div>
-                                        <div class="center-label-small">脆弱性</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="chart-stats-small">
-                                    <div class="stat-item-small">
-                                        <div class="stat-number-small" style="color: #8b5cf6;">45</div>
-                                        <div class="stat-label-small">緊急</div>
-                                        <div class="stat-sublabel-small">Critical</div>
-                                    </div>
-                                    <div class="stat-item-small">
-                                        <div class="stat-number-small" style="color: #ef4444;">135</div>
-                                        <div class="stat-label-small">高</div>
-                                        <div class="stat-sublabel-small">High</div>
-                                    </div>
-                                    <div class="stat-item-small">
-                                        <div class="stat-number-small" style="color: #f59e0b;">643</div>
-                                        <div class="stat-label-small">中</div>
-                                        <div class="stat-sublabel-small">Medium</div>
-                                    </div>
-                                    <div class="stat-item-small">
-                                        <div class="stat-number-small" style="color: #10b981;">2069</div>
-                                        <div class="stat-label-small">低</div>
-                                        <div class="stat-sublabel-small">Low</div>
-                                    </div>
-                            </div>
-                            </div>
-                        </div>
-                            </div>
-                    
-                    <div class="docs-pipeline">
-                        <div class="docs-info">
-                            <span class="docs-label">実行済みスキャン</span>
-                            <div class="docs-main">
-                                <i class="fas fa-search docs-icon"></i>
-                                <div class="docs-number">1,844</div>
-                                <div class="docs-value">件</div>
-                            </div>
+
+                    <div class="vuln-stat-card high">
+                        <div class="stat-number">135</div>
+                        <div class="stat-level">高</div>
+                        <div class="stat-type">High</div>
+                        <div class="vuln-examples">
+                            <div class="vuln-example">XSS脆弱性</div>
+                            <div class="vuln-example">認証バイパス</div>
                         </div>
                     </div>
-                    
-                    <div class="vulnerability-detection-grid">
-                        <div class="detection-item">
-                            <div class="detection-number purple">45</div>
-                            <div class="detection-value">緊急</div>
-                            <div class="detection-label">Critical</div>
-                            <div class="detection-examples">
-                                <div class="vuln-example">SQLインジェクション</div>
-                                <div class="vuln-example">リモートコード実行</div>
-                            </div>
-                        </div>
-                        <div class="detection-item">
-                            <div class="detection-number red">135</div>
-                            <div class="detection-value">高</div>
-                            <div class="detection-label">High</div>
-                            <div class="detection-examples">
-                                <div class="vuln-example">XSS脆弱性</div>
-                                <div class="vuln-example">認証バイパス</div>
-                            </div>
-                        </div>
-                        <div class="detection-item">
-                            <div class="detection-number yellow">643</div>
-                            <div class="detection-value">中</div>
-                            <div class="detection-label">Medium</div>
-                            <div class="detection-examples">
-                                <div class="vuln-example">CSRF脆弱性</div>
-                                <div class="vuln-example">情報漏洩</div>
-                            </div>
-                        </div>
-                        <div class="detection-item">
-                            <div class="detection-number green">2069</div>
-                            <div class="detection-value">低</div>
-                            <div class="detection-label">Low</div>
-                            <div class="detection-examples">
-                                <div class="vuln-example">設定不備</div>
-                                <div class="vuln-example">バージョン情報漏洩</div>
-                            </div>
+
+                    <div class="vuln-stat-card medium">
+                        <div class="stat-number">643</div>
+                        <div class="stat-level">中</div>
+                        <div class="stat-type">Medium</div>
+                        <div class="vuln-examples">
+                            <div class="vuln-example">CSRF脆弱性</div>
+                            <div class="vuln-example">情報漏洩</div>
                         </div>
                     </div>
-                    
-                    <div class="breakdown-stats">
-                        <div class="breakdown-item">
-                            <span class="breakdown-number">732</span>
-                            <span class="breakdown-label">Webアプリ</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span class="breakdown-number">313</span>
-                            <span class="breakdown-label">ネットワーク</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span class="breakdown-number">464</span>
-                            <span class="breakdown-label">API</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span class="breakdown-number">335</span>
-                            <span class="breakdown-label">モバイル</span>
-                        </div>
-                    </div>
-                    
-                    <div class="pipeline-summary">
-                        <div class="summary-row">
-                            <span class="summary-label">発見された脆弱性</span>
-                            <span class="summary-value">2,847</span>
-                            </div>
-                        <div class="summary-row">
-                            <span class="summary-label">修正済み</span>
-                            <span class="summary-value">1,924</span>
-                            </div>
-                        <div class="summary-row">
-                            <span class="summary-label">未修正（高リスク）</span>
-                            <span class="summary-value orange">135</span>
-                                </div>
-                        <div class="summary-row">
-                            <span class="summary-label">平均修正時間</span>
-                            <span class="summary-value">7.2日</span>
+
+                    <div class="vuln-stat-card low">
+                        <div class="stat-number">2069</div>
+                        <div class="stat-level">低</div>
+                        <div class="stat-type">Low</div>
+                        <div class="vuln-examples">
+                            <div class="vuln-example">設定不備</div>
+                            <div class="vuln-example">バージョン情報漏洩</div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- 右側：月次スキャントレンド -->
+            <!-- 下部セクション -->
+            <div class="bottom-section">
+                <!-- 月次スキャントレンド -->
                 <div class="high-value-card">
                     <div class="card-header">
                         <h2>月次スキャントレンド</h2>
@@ -283,95 +185,82 @@
                             <canvas id="scanStatsChart" width="400" height="200"></canvas>
                         </div>
                     </div>
-                    
-                    <!-- 対象システム一覧を月次スキャントレンドの下に移動 -->
-                    <div class="systems-section-inline">
-                        <div class="section-header">
-                            <h3>対象システム一覧</h3>
+                </div>
+
+                <!-- 対象システム一覧 -->
+                <div class="high-value-card">
+                    <div class="card-header">
+                        <h2>対象システム一覧</h2>
+                    </div>
+                    <div class="deals-table">
+                        <div class="table-header">
+                            <span>対象システム</span>
+                            <span>対象URL</span>
+                            <span>セキュリティスコア</span>
+                            <span>脆弱性分布</span>
+                            <span>担当者</span>
+                        </div>
+                        
+                        <div class="table-row">
+                            <span class="account-name">Alpha Corp. Web</span>
+                            <span class="opportunity">https://alpha-corp.com</span>
+                            <span class="deal-size security-score-high">92.5</span>
+                            <div class="vulnerability-mini-chart">
+                                <canvas id="miniChart1" width="40" height="40"></canvas>
                             </div>
-                        <div class="deals-table">
-                            <div class="table-header">
-                                <span>対象システム</span>
-                                <span>対象URL</span>
-                                <span>セキュリティスコア</span>
-                                <span>脆弱性分布</span>
-                                <span>担当者</span>
+                            <div class="approvers">
+                                <img src="https://via.placeholder.com/24x24/EF4444/FFFFFF?text=A" alt="A">
+                                <img src="https://via.placeholder.com/24x24/10B981/FFFFFF?text=B" alt="B">
                             </div>
-                            
-                            <div class="table-row">
-                                <span class="account-name">Alpha Corp. Web</span>
-                                <span class="opportunity">https://alpha-corp.com</span>
-                                <span class="deal-size security-score-high">92.5</span>
-                                <div class="vulnerability-mini-chart">
-                                    <canvas id="miniChart1" width="40" height="40"></canvas>
-                                    </div>
-                                <div class="approvers">
-                                    <img src="https://via.placeholder.com/24x24/EF4444/FFFFFF?text=A" alt="A">
-                                    <img src="https://via.placeholder.com/24x24/10B981/FFFFFF?text=B" alt="B">
-                                </div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <span class="account-name">Zeta API Server</span>
+                            <span class="opportunity">https://api.zeta.com</span>
+                            <span class="deal-size security-score-medium">78.3</span>
+                            <div class="vulnerability-mini-chart">
+                                <canvas id="miniChart2" width="40" height="40"></canvas>
                             </div>
-                            
-                            <div class="table-row">
-                                <span class="account-name">Zeta API Server</span>
-                                <span class="opportunity">https://api.zeta.com</span>
-                                <span class="deal-size security-score-medium">78.3</span>
-                                <div class="vulnerability-mini-chart">
-                                    <canvas id="miniChart2" width="40" height="40"></canvas>
-                                        </div>
-                                <div class="approvers">
-                                    <img src="https://via.placeholder.com/24x24/8B5CF6/FFFFFF?text=D" alt="D">
-                                </div>
+                            <div class="approvers">
+                                <img src="https://via.placeholder.com/24x24/8B5CF6/FFFFFF?text=D" alt="D">
                             </div>
-                            
-                            <div class="table-row">
-                                <span class="account-name">Bezel Mobile App</span>
-                                <span class="opportunity">https://app.bezel.com</span>
-                                <span class="deal-size security-score-low">65.8</span>
-                                <div class="vulnerability-mini-chart">
-                                    <canvas id="miniChart3" width="40" height="40"></canvas>
-                                </div>
-                                <div class="approvers">
-                                    <img src="https://via.placeholder.com/24x24/EC4899/FFFFFF?text=E" alt="E">
-                                    <img src="https://via.placeholder.com/24x24/06B6D4/FFFFFF?text=F" alt="F">
-                                </div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <span class="account-name">Bezel Mobile App</span>
+                            <span class="opportunity">https://app.bezel.com</span>
+                            <span class="deal-size security-score-low">65.8</span>
+                            <div class="vulnerability-mini-chart">
+                                <canvas id="miniChart3" width="40" height="40"></canvas>
                             </div>
-                            
-                            <div class="table-row">
-                                <span class="account-name">Alpha Corp. Web</span>
-                                <span class="opportunity">https://alpha-corp.com</span>
-                                <span class="deal-size security-score-high">92.5</span>
-                                <div class="vulnerability-mini-chart">
-                                    <canvas id="miniChart4" width="40" height="40"></canvas>
-                                </div>
-                                <div class="approvers">
-                                    <img src="https://via.placeholder.com/24x24/F97316/FFFFFF?text=G" alt="G">
-                                    <img src="https://via.placeholder.com/24x24/10B981/FFFFFF?text=H" alt="H">
-                                </div>
+                            <div class="approvers">
+                                <img src="https://via.placeholder.com/24x24/EC4899/FFFFFF?text=E" alt="E">
+                                <img src="https://via.placeholder.com/24x24/06B6D4/FFFFFF?text=F" alt="F">
                             </div>
-                            
-                            <div class="table-row">
-                                <span class="account-name">Zeta API Server</span>
-                                <span class="opportunity">https://api.zeta.com</span>
-                                <span class="deal-size security-score-medium">78.3</span>
-                                <div class="vulnerability-mini-chart">
-                                    <canvas id="miniChart5" width="40" height="40"></canvas>
-                                </div>
-                                <div class="approvers">
-                                    <img src="https://via.placeholder.com/24x24/84CC16/FFFFFF?text=I" alt="I">
-                                </div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <span class="account-name">Gamma Platform</span>
+                            <span class="opportunity">https://gamma-platform.com</span>
+                            <span class="deal-size security-score-high">89.2</span>
+                            <div class="vulnerability-mini-chart">
+                                <canvas id="miniChart4" width="40" height="40"></canvas>
                             </div>
-                            
-                            <div class="table-row">
-                                <span class="account-name">Bezel Mobile App</span>
-                                <span class="opportunity">https://app.bezel.com</span>
-                                <span class="deal-size security-score-low">65.8</span>
-                                <div class="vulnerability-mini-chart">
-                                    <canvas id="miniChart6" width="40" height="40"></canvas>
-                                </div>
-                                <div class="approvers">
-                                    <img src="https://via.placeholder.com/24x24/EC4899/FFFFFF?text=J" alt="J">
-                                    <img src="https://via.placeholder.com/24x24/06B6D4/FFFFFF?text=K" alt="K">
-                                </div>
+                            <div class="approvers">
+                                <img src="https://via.placeholder.com/24x24/F97316/FFFFFF?text=G" alt="G">
+                                <img src="https://via.placeholder.com/24x24/10B981/FFFFFF?text=H" alt="H">
+                            </div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <span class="account-name">Delta Services</span>
+                            <span class="opportunity">https://delta.services</span>
+                            <span class="deal-size security-score-medium">74.8</span>
+                            <div class="vulnerability-mini-chart">
+                                <canvas id="miniChart5" width="40" height="40"></canvas>
+                            </div>
+                            <div class="approvers">
+                                <img src="https://via.placeholder.com/24x24/84CC16/FFFFFF?text=I" alt="I">
                             </div>
                         </div>
                     </div>
@@ -505,37 +394,13 @@
 
         // チャートの初期化
         function initCharts() {
-            // 上部の脆弱性分布ドーナツチャート
-            const vulnTopCtx = document.getElementById('vulnerabilityChartTop').getContext('2d');
-            new Chart(vulnTopCtx, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [135, 643, 2069],
-                        backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
-                        borderWidth: 0,
-                        cutout: '70%'
-                    }]
-                },
-                options: {
-                    responsive: false,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
             // ミニチャート用のデータ
             const miniChartData = [
                 [5, 12, 23], // Alpha Corp
                 [8, 15, 18], // Zeta API
                 [15, 20, 12], // Bezel Mobile
-                [5, 12, 23], // Alpha Corp (repeat)
-                [8, 15, 18], // Zeta API (repeat)
-                [15, 20, 12]  // Bezel Mobile (repeat)
+                [5, 12, 23], // Gamma Platform
+                [8, 15, 18]  // Delta Services
             ];
 
             // 各システムのミニチャートを作成
@@ -633,32 +498,19 @@
                                 display: false
                             },
                             ticks: {
-                                color: '#9CA3AF',
-                                font: {
-                                    size: 12
-                                }
+                                color: '#9CA3AF'
                             }
                         },
                         y: {
                             stacked: true,
                             beginAtZero: true,
-                            max: 400,
                             grid: {
-                                color: '#E5E7EB',
-                                drawBorder: false
+                                color: '#374151'
                             },
                             ticks: {
-                                color: '#9CA3AF',
-                                font: {
-                                    size: 11
-                                },
-                                stepSize: 100
+                                color: '#9CA3AF'
                             }
                         }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
                     }
                 }
             });
