@@ -14,20 +14,20 @@
     <header class="top-header">
         <div class="header-container">
             <div class="header-left">
-                <button class="bento-menu-btn" onclick="toggleBentoMenu()">
-                    <div class="bento-grid">
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                        <div class="bento-dot"></div>
-                    </div>
-                </button>
                 <div class="logo-section">
+                    <button class="bento-menu-btn" onclick="toggleBentoMenu()">
+                        <div class="bento-grid">
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                        </div>
+                    </button>
                     <span class="logo-text">FEARLOCK</span>
                 </div>
             </div>
@@ -114,316 +114,210 @@
     </header>
 
     <!-- メインコンテンツ -->
-    <main class="main-content">
-        <div class="content-container">
-            <!-- ページヘッダー -->
-            <div class="page-header">
-                <h1>分析</h1>
-                <div class="header-actions">
-                    <select class="filter-select" id="timeRangeFilter">
-                        <option value="7d">過去7日間</option>
-                        <option value="30d" selected>過去30日間</option>
-                        <option value="90d">過去90日間</option>
-                        <option value="1y">過去1年間</option>
-                    </select>
-                    <button class="btn btn-outline" onclick="exportAnalysis()">
-                        <i class="fas fa-download"></i>
-                        エクスポート
-                    </button>
+    <main class="analysis-main">
+        <div class="analysis-container">
+            <!-- 統計カードセクション -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <h3>Critical</h3>
+                        <div class="stat-number">45</div>
+                        <div class="stat-change">+5 from last week</div>
+                    </div>
+                    <div class="stat-icon critical">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
                 </div>
-            </div>
 
-            <!-- 分析サマリー -->
-            <div class="analysis-summary">
-                <div class="summary-card">
-                    <div class="summary-icon trend-up">
-                        <i class="fas fa-arrow-up"></i>
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <h3>High</h3>
+                        <div class="stat-number">127</div>
+                        <div class="stat-change">-8 from last week</div>
                     </div>
-                    <div class="summary-content">
-                        <div class="summary-number">+15%</div>
-                        <div class="summary-label">脆弱性検出率</div>
-                        <div class="summary-change">前月比</div>
+                    <div class="stat-icon high">
+                        <i class="fas fa-bug"></i>
                     </div>
                 </div>
-                <div class="summary-card">
-                    <div class="summary-icon trend-down">
-                        <i class="fas fa-arrow-down"></i>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <h3>Medium</h3>
+                        <div class="stat-number">284</div>
+                        <div class="stat-change">+12 from last week</div>
                     </div>
-                    <div class="summary-content">
-                        <div class="summary-number">-8%</div>
-                        <div class="summary-label">修正時間</div>
-                        <div class="summary-change">前月比</div>
-                    </div>
-                </div>
-                <div class="summary-card">
-                    <div class="summary-icon trend-up">
+                    <div class="stat-icon medium">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <div class="summary-content">
-                        <div class="summary-number">92%</div>
-                        <div class="summary-label">セキュリティスコア</div>
-                        <div class="summary-change">+3% 向上</div>
-                    </div>
                 </div>
-                <div class="summary-card">
-                    <div class="summary-icon trend-neutral">
-                        <i class="fas fa-clock"></i>
+
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <h3>Low</h3>
+                        <div class="stat-number">592</div>
+                        <div class="stat-change">+23 from last week</div>
                     </div>
-                    <div class="summary-content">
-                        <div class="summary-number">2.3日</div>
-                        <div class="summary-label">平均修正時間</div>
-                        <div class="summary-change">前月と同等</div>
+                    <div class="stat-icon low">
+                        <i class="fas fa-info-circle"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- チャートセクション -->
-            <div class="charts-section">
-                <!-- 脆弱性トレンド -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>脆弱性検出トレンド</h3>
-                        <div class="chart-controls">
-                            <button class="chart-btn active" onclick="switchChart('trend', 'monthly')">月別</button>
-                            <button class="chart-btn" onclick="switchChart('trend', 'weekly')">週別</button>
-                            <button class="chart-btn" onclick="switchChart('trend', 'daily')">日別</button>
+            <!-- メインコンテンツグリッド -->
+            <div class="main-grid">
+                <!-- 左カラム -->
+                <div class="left-column">
+                    <!-- 最新検出結果 -->
+                    <div class="latest-detections">
+                        <div class="section-header">
+                            <div>
+                                <h2 class="section-title">Latest Detections</h2>
+                                <p class="section-subtitle">Most recent vulnerability detections from your scans</p>
+                            </div>
+                        </div>
+
+                        <div class="detections-list">
+                            <div class="detection-item">
+                                <div class="detection-avatar">AC</div>
+                                <div class="detection-info">
+                                    <h4>Alpha Corp</h4>
+                                    <p>Web Application</p>
+                                </div>
+                                <div class="status-badge status-pending">Pending</div>
+                                <div class="detection-file">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span>SQL_Injection.pdf</span>
+                                </div>
+                                <div class="detection-severity severity-critical">Critical</div>
+                                <div class="detection-action">See Detail</div>
+                            </div>
+
+                            <div class="detection-item">
+                                <div class="detection-avatar">ZS</div>
+                                <div class="detection-info">
+                                    <h4>Zeta Server</h4>
+                                    <p>API Service</p>
+                                </div>
+                                <div class="status-badge status-complete">Complete</div>
+                                <div class="detection-file">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span>XSS_Report.pdf</span>
+                                </div>
+                                <div class="detection-severity severity-high">High</div>
+                                <div class="detection-action">See Detail</div>
+                            </div>
+
+                            <div class="detection-item">
+                                <div class="detection-avatar">BM</div>
+                                <div class="detection-info">
+                                    <h4>Bezel Mobile</h4>
+                                    <p>Mobile App</p>
+                                </div>
+                                <div class="status-badge status-pending">Pending</div>
+                                <div class="detection-file">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span>CSRF_Issues.pdf</span>
+                                </div>
+                                <div class="detection-severity severity-medium">Medium</div>
+                                <div class="detection-action">See Detail</div>
+                            </div>
+
+                            <div class="detection-item">
+                                <div class="detection-avatar">GW</div>
+                                <div class="detection-info">
+                                    <h4>GrisWalleque</h4>
+                                    <p>Web Platform</p>
+                                </div>
+                                <div class="status-badge status-complete">Complete</div>
+                                <div class="detection-file">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span>Config_Issues.pdf</span>
+                                </div>
+                                <div class="detection-severity severity-low">Low</div>
+                                <div class="detection-action">See Detail</div>
+                            </div>
+                        </div>
+
+                        <div class="pagination">
+                            <div class="pagination-btn active">1</div>
+                            <div class="pagination-btn">2</div>
+                            <div class="pagination-btn">3</div>
+                            <div class="pagination-btn">></div>
                         </div>
                     </div>
-                    <div class="chart-content">
-                        <canvas id="vulnerabilityTrendChart"></canvas>
+
+                    <!-- アナリティクスセクション -->
+                    <div class="analytics-section">
+                        <div class="analytics-header">
+                            <h2 class="section-title">Analytics</h2>
+                            <div class="analytics-badge">NEW</div>
+                            <div class="year-selector">Year 2024</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="analyticsChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 脆弱性分布 -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>脆弱性重要度分布</h3>
+                <!-- 右カラム -->
+                <div class="right-column">
+                    <!-- データビューセクション -->
+                    <div class="data-view">
+                        <div class="data-view-header">
+                            <div class="data-view-title">Vulnerability Status</div>
+                            <div class="data-view-menu">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                        <div class="data-view-subtitle">Current vulnerability resolution status</div>
+                        
+                        <div class="donut-chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+
                         <div class="chart-legend">
                             <div class="legend-item">
-                                <span class="legend-color critical"></span>
-                                <span>緊急</span>
+                                <div class="legend-left">
+                                    <div class="legend-color fixed"></div>
+                                    <span class="legend-label">Fixed Vulnerabilities</span>
+                                </div>
+                                <div>
+                                    <span class="legend-percentage">65%</span>
+                                    <span class="legend-change">▲ 5.2%</span>
+                                </div>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-color high"></span>
-                                <span>高</span>
+                                <div class="legend-left">
+                                    <div class="legend-color pending"></div>
+                                    <span class="legend-label">Pending Fixes</span>
+                                </div>
+                                <div>
+                                    <span class="legend-percentage">35%</span>
+                                    <span class="legend-change">▼ 5.2%</span>
+                                </div>
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-color medium"></span>
-                                <span>中</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-color low"></span>
-                                <span>低</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-content">
-                        <canvas id="vulnerabilityDistributionChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- プロジェクト別分析 -->
-            <div class="project-analysis-section">
-                <h2>プロジェクト別分析</h2>
-                <div class="project-analysis-grid">
-                    <div class="project-analysis-card">
-                        <div class="project-header">
-                            <div class="project-info">
-                                <h3>Alpha Corp. Webサイト</h3>
-                                <span class="project-url">https://alpha-corp.com</span>
-                            </div>
-                            <div class="project-score high">
-                                <span class="score-value">85</span>
-                                <span class="score-label">スコア</span>
-                            </div>
-                        </div>
-                        <div class="project-metrics">
-                            <div class="metric">
-                                <span class="metric-label">総脆弱性</span>
-                                <span class="metric-value">27</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">修正済み</span>
-                                <span class="metric-value">19</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">未修正</span>
-                                <span class="metric-value">8</span>
-                            </div>
-                        </div>
-                        <div class="project-chart">
-                            <canvas id="alphaChart"></canvas>
                         </div>
                     </div>
 
-                    <div class="project-analysis-card">
-                        <div class="project-header">
-                            <div class="project-info">
-                                <h3>Zeta API Server</h3>
-                                <span class="project-url">https://api.zeta.com</span>
-                            </div>
-                            <div class="project-score medium">
-                                <span class="score-value">72</span>
-                                <span class="score-label">スコア</span>
-                            </div>
-                        </div>
-                        <div class="project-metrics">
-                            <div class="metric">
-                                <span class="metric-label">総脆弱性</span>
-                                <span class="metric-value">25</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">修正済み</span>
-                                <span class="metric-value">15</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">未修正</span>
-                                <span class="metric-value">10</span>
+                    <!-- レポートドキュメントセクション -->
+                    <div class="report-document">
+                        <div class="report-header">
+                            <h2 class="section-title">Scan Reports</h2>
+                            <div class="report-controls">
+                                <div class="control-dot orange"></div>
+                                <div class="control-dot purple"></div>
+                                <div class="control-dot blue"></div>
                             </div>
                         </div>
-                        <div class="project-chart">
-                            <canvas id="zetaChart"></canvas>
+                        
+                        <div class="report-chart-container">
+                            <canvas id="reportChart"></canvas>
                         </div>
-                    </div>
 
-                    <div class="project-analysis-card">
-                        <div class="project-header">
-                            <div class="project-info">
-                                <h3>Bezel Mobile App</h3>
-                                <span class="project-url">https://app.bezel.com</span>
-                            </div>
-                            <div class="project-score low">
-                                <span class="score-value">58</span>
-                                <span class="score-label">スコア</span>
-                            </div>
-                        </div>
-                        <div class="project-metrics">
-                            <div class="metric">
-                                <span class="metric-label">総脆弱性</span>
-                                <span class="metric-value">42</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">修正済み</span>
-                                <span class="metric-value">18</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">未修正</span>
-                                <span class="metric-value">24</span>
-                            </div>
-                        </div>
-                        <div class="project-chart">
-                            <canvas id="bezelChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 脆弱性タイプ分析 -->
-            <div class="vulnerability-types-section">
-                <h2>脆弱性タイプ別分析</h2>
-                <div class="vulnerability-types-table">
-                    <div class="table-header">
-                        <div>脆弱性タイプ</div>
-                        <div>検出数</div>
-                        <div>修正率</div>
-                        <div>平均修正時間</div>
-                        <div>トレンド</div>
-                    </div>
-
-                    <div class="table-row">
-                        <div class="vuln-type">
-                            <i class="fas fa-database vuln-icon"></i>
-                            <span>SQLインジェクション</span>
-                        </div>
-                        <div class="vuln-count">15</div>
-                        <div class="fix-rate">
-                            <div class="progress-bar small">
-                                <div class="progress-fill" style="width: 80%"></div>
-                            </div>
-                            <span>80%</span>
-                        </div>
-                        <div class="fix-time">2.1日</div>
-                        <div class="trend">
-                            <i class="fas fa-arrow-down trend-down"></i>
-                            <span>-12%</span>
-                        </div>
-                    </div>
-
-                    <div class="table-row">
-                        <div class="vuln-type">
-                            <i class="fas fa-code vuln-icon"></i>
-                            <span>XSS</span>
-                        </div>
-                        <div class="vuln-count">23</div>
-                        <div class="fix-rate">
-                            <div class="progress-bar small">
-                                <div class="progress-fill" style="width: 65%"></div>
-                            </div>
-                            <span>65%</span>
-                        </div>
-                        <div class="fix-time">1.8日</div>
-                        <div class="trend">
-                            <i class="fas fa-arrow-up trend-up"></i>
-                            <span>+8%</span>
-                        </div>
-                    </div>
-
-                    <div class="table-row">
-                        <div class="vuln-type">
-                            <i class="fas fa-shield-alt vuln-icon"></i>
-                            <span>CSRF</span>
-                        </div>
-                        <div class="vuln-count">8</div>
-                        <div class="fix-rate">
-                            <div class="progress-bar small">
-                                <div class="progress-fill" style="width: 90%"></div>
-                            </div>
-                            <span>90%</span>
-                        </div>
-                        <div class="fix-time">1.2日</div>
-                        <div class="trend">
-                            <i class="fas fa-minus trend-neutral"></i>
-                            <span>0%</span>
-                        </div>
-                    </div>
-
-                    <div class="table-row">
-                        <div class="vuln-type">
-                            <i class="fas fa-key vuln-icon"></i>
-                            <span>認証・認可</span>
-                        </div>
-                        <div class="vuln-count">12</div>
-                        <div class="fix-rate">
-                            <div class="progress-bar small">
-                                <div class="progress-fill" style="width: 75%"></div>
-                            </div>
-                            <span>75%</span>
-                        </div>
-                        <div class="fix-time">3.5日</div>
-                        <div class="trend">
-                            <i class="fas fa-arrow-down trend-down"></i>
-                            <span>-5%</span>
-                        </div>
-                    </div>
-
-                    <div class="table-row">
-                        <div class="vuln-type">
-                            <i class="fas fa-eye-slash vuln-icon"></i>
-                            <span>情報漏洩</span>
-                        </div>
-                        <div class="vuln-count">6</div>
-                        <div class="fix-rate">
-                            <div class="progress-bar small">
-                                <div class="progress-fill" style="width: 100%"></div>
-                            </div>
-                            <span>100%</span>
-                        </div>
-                        <div class="fix-time">0.8日</div>
-                        <div class="trend">
-                            <i class="fas fa-arrow-up trend-up"></i>
-                            <span>+15%</span>
-                        </div>
+                        <button class="action-btn">
+                            <i class="fas fa-file-alt"></i>
+                            Generate Report
+                        </button>
                     </div>
                 </div>
             </div>
@@ -487,40 +381,13 @@
             dropdown.classList.toggle('show');
         }
 
-        // チャート切り替え
-        function switchChart(chartType, period) {
-            // ボタンのアクティブ状態を更新
-            const buttons = document.querySelectorAll('.chart-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // チャートデータを更新（実際の実装では期間に応じてデータを取得）
-            if (chartType === 'trend') {
-                updateVulnerabilityTrendChart(period);
-            }
-        }
-
-        // 分析データのエクスポート
-        function exportAnalysis() {
-            alert('分析データをエクスポートします');
-        }
-
-        // 脆弱性トレンドチャートの更新
-        function updateVulnerabilityTrendChart(period) {
-            // 期間に応じたデータの更新処理
-            console.log(`Updating chart for period: ${period}`);
-        }
-
         // ログアウト機能
         async function logout() {
             try {
                 const { error } = await supabase.auth.signOut();
                 if (error) throw error;
                 
-                // Cookieをクリア
                 removeCookie('sb-session-cookie');
-                
-                // ログインページにリダイレクト
                 window.location.href = 'login.html';
             } catch (error) {
                 console.error('ログアウトエラー:', error);
@@ -538,7 +405,6 @@
                     return;
                 }
                 
-                // ユーザー情報を表示
                 const userEmail = data.session.user.email;
                 document.getElementById('user-email').textContent = userEmail;
                 document.getElementById('user-name').textContent = userEmail.split('@')[0];
@@ -547,6 +413,135 @@
                 console.error('認証チェックエラー:', error);
                 window.location.href = 'login.html';
             }
+        }
+
+        // チャート初期化
+        function initCharts() {
+            // アナリティクスチャート（棒グラフ）
+            const analyticsCtx = document.getElementById('analyticsChart').getContext('2d');
+            new Chart(analyticsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        data: [120, 95, 180, 160, 200, 150, 170, 190, 140, 210, 180, 230],
+                        backgroundColor: '#5b21b6',
+                        borderRadius: 4,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ステータスチャート（ドーナツチャート）
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [65, 35],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // レポートチャート（積み上げ棒グラフ）
+            const reportCtx = document.getElementById('reportChart').getContext('2d');
+            new Chart(reportCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    datasets: [
+                        {
+                            data: [20, 35, 25, 40, 30, 35],
+                            backgroundColor: '#f97316',
+                            borderRadius: 2,
+                            borderSkipped: false,
+                        },
+                        {
+                            data: [30, 25, 35, 20, 40, 25],
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 2,
+                            borderSkipped: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // 外部クリックでドロップダウンを閉じる
@@ -563,92 +558,10 @@
             }
         });
 
-        // チャートの初期化
-        function initializeCharts() {
-            // 脆弱性トレンドチャート
-            const trendCtx = document.getElementById('vulnerabilityTrendChart').getContext('2d');
-            new Chart(trendCtx, {
-                type: 'line',
-                data: {
-                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
-                    datasets: [{
-                        label: '検出された脆弱性',
-                        data: [12, 19, 3, 5, 2, 3],
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }, {
-                        label: '修正された脆弱性',
-                        data: [8, 15, 2, 4, 1, 2],
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // 脆弱性分布チャート
-            const distributionCtx = document.getElementById('vulnerabilityDistributionChart').getContext('2d');
-            new Chart(distributionCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['高', '中', '低'],
-                    datasets: [{
-                        data: [12, 19, 3],
-                        backgroundColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(255, 205, 86)',
-                            'rgb(54, 162, 235)'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // プロジェクト別ミニチャート
-            const projectCharts = ['alphaChart', 'zetaChart', 'bezelChart'];
-            const projectData = [
-                [8, 19],  // Alpha: 未修正, 修正済み
-                [10, 15], // Zeta: 未修正, 修正済み
-                [24, 18]  // Bezel: 未修正, 修正済み
-            ];
-
-            projectCharts.forEach((chartId, index) => {
-                const ctx = document.getElementById(chartId).getContext('2d');
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['未修正', '修正済み'],
-                        datasets: [{
-                            data: projectData[index],
-                            backgroundColor: ['#EF4444', '#10B981']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-            });
-        }
-
         // ページ読み込み時の初期化
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
-            initializeCharts();
+            initCharts();
         });
     </script>
 </body>
