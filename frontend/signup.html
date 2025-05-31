@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEARLOCK - 新規登録</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-sidebar">
+            <div class="auth-logo">
+                <img src="images/fearlock-logo.png" alt="FEARLOCK" onerror="this.src='images/fearlock-logo.svg'; this.onerror=null;">
+            </div>
+            <div class="auth-message">
+                <h2>ハッカーの見るものを<br>あなたも見る</h2>
+                <p>脆弱性の盲点は、攻撃者に絶好の機会を与えます。私たちの脅威検知・攻撃対策管理ソリューション FEARLOCK をぜひお試しください。</p>
+                <a href="#" class="btn btn-secondary">詳細を見る</a>
+            </div>
+        </div>
+        
+        <div class="auth-form-container" id="signup-flow">
+            <!-- ステップ1: メールアドレス入力 -->
+            <div class="auth-step" id="step-email">
+                <h2>新規登録</h2>
+                <form id="email-form">
+                <div class="form-group">
+                    <label for="email">メールアドレス</label>
+                        <input type="email" id="email" class="auth-input" placeholder="your@email.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">次へ</button>
+                    <div class="form-divider">または</div>
+                    <a href="login.html" class="btn btn-outline btn-block">既存アカウントでログイン</a>
+                </form>
+                <div class="auth-links">
+                    <p>登録することで、<a href="#">利用規約</a>と<a href="#">プライバシーポリシー</a>に同意したことになります。</p>
+                </div>
+            </div>
+
+            <!-- ステップ2: 認証コード入力 -->
+            <div class="auth-step" id="step-verification" style="display: none;">
+                <h2>認証コードを入力</h2>
+                <p class="auth-subtitle">
+                    <span id="user-email"></span>に送信された6桁の認証コードを入力してください。
+                    コードの有効期限は3分間です。
+                </p>
+                <form id="verification-form">
+                    <div class="form-group">
+                        <label for="verification-code">認証コード</label>
+                        <input type="text" id="verification-code" class="auth-input" placeholder="123456" required maxlength="6" pattern="[0-9]{6}">
+                        <div class="code-timer" id="code-timer">有効期限: <span id="timer">03:00</span></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">確認</button>
+                    <button type="button" id="resend-code" class="btn btn-text">コードを再送信</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" id="back-to-email">メールアドレスを変更</a>
+                    <span class="link-separator">|</span>
+                    <a href="auth-help.html" target="_blank">認証メールについてのヘルプ</a>
+                </div>
+            </div>
+
+            <!-- ステップ3: パスワード設定 -->
+            <div class="auth-step" id="step-password" style="display: none;">
+                <h2>パスワード設定</h2>
+                <p class="auth-subtitle">
+                    アカウントのパスワードを設定してください
+                </p>
+                <form id="password-form">
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                        <input type="password" id="password" class="auth-input" placeholder="パスワード" required>
+                        <div class="password-strength" id="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-meter" id="strength-meter"></div>
+                            </div>
+                            <p id="strength-text">パスワードの強度</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password-confirm">パスワード確認</label>
+                        <input type="password" id="password-confirm" class="auth-input" placeholder="パスワード確認" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">アカウント作成を完了</button>
+                </form>
+                <div class="form-info">
+                    <p>パスワードは以下の条件を満たしてください：</p>
+                    <ul>
+                        <li id="length-check">8文字以上</li>
+                        <li id="uppercase-check">大文字を含む</li>
+                        <li id="lowercase-check">小文字を含む</li>
+                        <li id="number-check">数字を含む</li>
+                        <li id="special-check">特殊文字を含む (!@#$%&など)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ステップ4: 完了メッセージ -->
+            <div class="auth-step" id="step-complete" style="display: none;">
+                <div class="complete-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>アカウント作成完了！</h2>
+                    <p>FEARLOCKへようこそ！アカウントが正常に作成されました。</p>
+                    <a href="dashboard.html" class="btn btn-primary btn-block">ダッシュボードに進む</a>
+                </div>
+            </div>
+
+            <div id="auth-status" class="auth-status"></div>
+        </div>
+    </div>
+
+    <script>
+        // Supabaseの設定
+        const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
+        
+        // Cookie関連のヘルパー関数
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            }
+            return null;
+        }
+
+        function removeCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
+        }
+        
+        // Supabaseクライアントの初期化（Cookieストレージ使用）
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: false,
+                storageKey: 'sb-session-cookie',
+                storage: {
+                    getItem: (key) => getCookie(key),
+                    setItem: (key, value) => setCookie(key, value, 7), // 7日間有効なCookie
+                    removeItem: (key) => removeCookie(key)
+                }
+            }
+        });
+
+        // ステータスメッセージの表示
+        function updateStatus(message, isError = false) {
+            const statusElement = document.getElementById('auth-status');
+            statusElement.textContent = message;
+            statusElement.className = 'auth-status ' + (isError ? 'error' : 'success');
+            statusElement.style.display = message ? 'block' : 'none';
+        }
+
+        // エラーハンドリング
+        window.addEventListener('error', function(event) {
+            updateStatus('システムエラーが発生しました: ' + event.message, true);
+        });
+
+        // ステップ関連の変数
+        let verificationCode = '';
+        let userEmail = '';
+        let timerInterval = null;
+        let codeExpiryTime = null;
+
+        // すでにログイン済みの場合はダッシュボードへ
+        async function checkAndRedirect() {
+            try {
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('セッションの取得に失敗しました:', error);
+                    return;
+                }
+                
+                if (data.session) {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (e) {
+                console.error('セッションチェック中にエラーが発生しました:', e);
+            }
+        }
+
+        // ページ読み込み時にセッションチェック
+        document.addEventListener('DOMContentLoaded', checkAndRedirect);
+
+        // ランダム認証コードの生成
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // タイマーの開始
+        function startCodeTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            // 3分間の有効期限を設定
+            codeExpiryTime = new Date().getTime() + 3 * 60 * 1000;
+            
+            updateTimer();
+            
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // タイマーの更新
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = codeExpiryTime - now;
+            
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').textContent = '00:00';
+                document.getElementById('verification-code').disabled = true;
+                document.getElementById('verification-form').querySelector('button[type="submit"]').disabled = true;
+                updateStatus('認証コードの有効期限が切れました。新しいコードを送信してください。', true);
+                return;
+            }
+            
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('timer').textContent = 
+                (minutes < 10 ? '0' + minutes : minutes) + ':' + 
+                (seconds < 10 ? '0' + seconds : seconds);
+        }
+
+        // ステップの切り替え
+        function showStep(stepId) {
+            // すべてのステップを非表示
+            document.querySelectorAll('.auth-step').forEach(step => {
+                step.style.display = 'none';
+            });
+            
+            // 指定されたステップを表示
+            document.getElementById(stepId).style.display = 'block';
+            
+            // ステータスメッセージをクリア
+            updateStatus('');
+        }
+
+        // パスワードの強度チェック
+        function checkPasswordStrength(password) {
+            const lengthValid = password.length >= 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            
+            // 視覚的なフィードバック
+            document.getElementById('length-check').className = lengthValid ? 'valid' : '';
+            document.getElementById('uppercase-check').className = hasUpperCase ? 'valid' : '';
+            document.getElementById('lowercase-check').className = hasLowerCase ? 'valid' : '';
+            document.getElementById('number-check').className = hasNumbers ? 'valid' : '';
+            document.getElementById('special-check').className = hasSpecialChar ? 'valid' : '';
+            
+            // 強度の計算 (0-4)
+            let strength = 0;
+            if (lengthValid) strength++;
+            if (hasUpperCase && hasLowerCase) strength++;
+            if (hasNumbers) strength++;
+            if (hasSpecialChar) strength++;
+            
+            // 強度メーターの更新
+            const meter = document.getElementById('strength-meter');
+            const text = document.getElementById('strength-text');
+            
+            // 強度に応じたスタイルとテキスト
+            if (password.length === 0) {
+                meter.style.width = '0%';
+                meter.className = '';
+                text.textContent = 'パスワードの強度';
+            } else if (strength === 1) {
+                meter.style.width = '25%';
+                meter.className = 'weak';
+                text.textContent = '弱いパスワード';
+            } else if (strength === 2) {
+                meter.style.width = '50%';
+                meter.className = 'fair';
+                text.textContent = '普通のパスワード';
+            } else if (strength === 3) {
+                meter.style.width = '75%';
+                meter.className = 'good';
+                text.textContent = '良いパスワード';
+            } else if (strength === 4) {
+                meter.style.width = '100%';
+                meter.className = 'strong';
+                text.textContent = '強力なパスワード';
+            }
+            
+            return {
+                valid: (strength >= 3),
+                strength: strength,
+                checks: {
+                    lengthValid,
+                    hasUpperCase,
+                    hasLowerCase,
+                    hasNumbers,
+                    hasSpecialChar
+                }
+            };
+        }
+
+        // ステップ1: メール入力フォームの処理
+        document.getElementById('email-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            const submitButton = this.querySelector('button[type="submit"]');
+            
+            // ボタンの無効化とロード表示
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
+            
+            try {
+                // メールアドレスの形式チェック
+                if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                    throw new Error('有効なメールアドレスを入力してください');
+                }
+                
+                // メールアドレスをセッションストレージに保存
+                userEmail = email;
+                sessionStorage.setItem('auth_email', email);
+                
+                updateStatus('メールを送信中...', false);
+                
+                // 直接OTP送信を試行（新規ユーザー作成を許可）
+                const { data, error } = await supabase.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        emailRedirectTo: window.location.origin,
+                        shouldCreateUser: true // 新規ユーザー作成を許可
+                    }
+                });
+                
+                if (error) {
+                    // 既存ユーザーの場合の処理
+                    if (error.message && error.message.includes('User already registered')) {
+                        console.log("既存アカウントを検出しました。セキュリティ通知を送信します...");
+                        sessionStorage.setItem('account_exists', 'true');
+                        
+                        // 既存アカウントへのセキュリティ通知送信
+                        await supabase.auth.resetPasswordForEmail(email, {
+                            redirectTo: window.location.origin + '/login.html',
+                        }).catch(e => console.error('セキュリティ通知送信エラー:', e));
+                        
+                        // ユーザーには一般的なメッセージを表示
+                        updateStatus('メールを送信しました。受信トレイをご確認ください。', false);
+                    } else {
+                        // その他のエラー
+                        console.error('OTP送信エラー:', error);
+                        throw new Error('メール送信中にエラーが発生しました。しばらく時間をおいて再度お試しください。');
+                    }
+                } else {
+                    // 新規ユーザーの場合
+                    console.log("新規ユーザーのOTPを送信しました");
+                    sessionStorage.setItem('account_exists', 'false');
+                    updateStatus('認証コードを送信しました。受信トレイをご確認ください。', false);
+                }
+                
+                // 次のステップを表示
+                document.getElementById('user-email').textContent = email;
+                showStep('step-verification');
+                startCodeTimer();
+                
+            } catch (error) {
+                console.error('エラー:', error);
+                updateStatus(error.message || '処理中にエラーが発生しました。しばらく時間をおいて再度お試しください。', true);
+            } finally {
+                // ボタンを元に戻す
+                submitButton.disabled = false;
+                submitButton.textContent = '次へ';
+            }
+        });
+
+        // ステップ2: 認証コード確認フォームの処理
+        document.getElementById('verification-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const codeInput = document.getElementById('verification-code');
+            const enteredCode = codeInput.value.trim();
+            const submitButton = this.querySelector('button[type="submit"]');
+            const isExistingAccount = sessionStorage.getItem('account_exists') === 'true';
+            
+            // ボタンの無効化とロード表示
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 確認中...';
+            
+            try {
+                const email = sessionStorage.getItem('auth_email');
+                if (!email) {
+                    throw new Error('セッションが無効です。最初からやり直してください');
+                }
+                
+                // 既存アカウントの場合は通知のみで実際の処理は行わない
+                if (isExistingAccount) {
+                    // タイミング攻撃を防ぐために、実際のAPIコールと同様の時間待機
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    // ユーザーには一般的なエラーを表示（アカウントの存在を漏らさない）
+                    updateStatus('認証コードが一致しないか、期限が切れています。再度お試しください。', true);
+                    
+                    // 既存アカウント用メッセージを小さく表示
+                    const statusElement = document.getElementById('auth-status');
+                    const noteElement = document.createElement('p');
+                    noteElement.className = 'auth-note';
+                    noteElement.textContent = '※ログインページからアクセスすることをお勧めします。';
+                    
+                    // 既に追加されている場合は追加しない
+                    if (!statusElement.querySelector('.auth-note')) {
+                        statusElement.appendChild(noteElement);
+                    }
+                } else {
+                    // 新規アカウントの場合は通常の処理
+                    // OTPトークンによる認証
+                    const { data, error } = await supabase.auth.verifyOtp({
+                        email: email,
+                        token: enteredCode,
+                        type: 'email'
+                    });
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    // タイマーの停止
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                    }
+                    
+                    // 次のステップを表示
+                    showStep('step-password');
+                }
+                
+            } catch (error) {
+                console.error('エラー:', error);
+                // 具体的なエラーメッセージを避け、一般的なメッセージを使用
+                updateStatus('認証コードの確認中にエラーが発生しました。コードを確認して再度お試しください。', true);
+            } finally {
+                // ボタンを元に戻す
+                submitButton.disabled = false;
+                submitButton.textContent = '確認';
+            }
+        });
+
+        // コード再送信ボタンの処理
+        document.getElementById('resend-code').addEventListener('click', async function() {
+            try {
+                const email = sessionStorage.getItem('auth_email');
+                if (!email) {
+                    throw new Error('メールアドレスが見つかりません。最初からやり直してください');
+                }
+                
+                const isExistingAccount = sessionStorage.getItem('account_exists') === 'true';
+                
+                updateStatus('認証コードを再送信中...', false);
+                
+                if (isExistingAccount) {
+                    // 既存アカウントの場合はセキュリティ通知を再送信
+                    console.log("既存アカウントへの再通知を送信します...");
+                    
+                    await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin + '/login.html',
+                    }).catch(e => console.error('セキュリティ通知再送信エラー:', e));
+                    
+                    updateStatus('確認メールを再送信しました。受信トレイをご確認ください。', false);
+                } else {
+                    // 新規アカウントの場合、OTPを再送信
+                    const { error } = await supabase.auth.signInWithOtp({
+                        email: email,
+                        options: {
+                            emailRedirectTo: window.location.origin,
+                            shouldCreateUser: true // 新規ユーザー作成を許可
+                        }
+                    });
+                    
+                    if (error) {
+                        console.error('OTP再送信エラー:', error);
+                        if (error.message && error.message.includes('rate limit')) {
+                            throw new Error('リクエストの制限に達しました。しばらく時間をおいて再度お試しください。');
+                        } else {
+                            throw new Error('コードの再送信中にエラーが発生しました。');
+                        }
+                    }
+                    
+                    updateStatus('新しい認証コードを送信しました。受信トレイをご確認ください。', false);
+                }
+                
+                // コード入力フィールドをリセット
+                document.getElementById('verification-code').value = '';
+                document.getElementById('verification-code').disabled = false;
+                document.getElementById('verification-form').querySelector('button[type="submit"]').disabled = false;
+                
+                // タイマーの再開始
+                startCodeTimer();
+                
+            } catch (error) {
+                console.error('コード再送信エラー:', error);
+                updateStatus(error.message || 'コードの再送信中にエラーが発生しました。しばらくしてから再度お試しください。', true);
+            }
+        });
+
+        // 戻るリンクの処理
+        document.getElementById('back-to-email').addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // タイマーの停止
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // メール入力画面に戻る
+            showStep('step-email');
+        });
+
+        // パスワード入力時の強度チェック
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+
+        // ステップ3: パスワード設定フォームの処理
+        document.getElementById('password-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('password-confirm');
+            const password = passwordInput.value;
+            const confirmPassword = confirmInput.value;
+            const submitButton = this.querySelector('button[type="submit"]');
+            
+            // ボタンの無効化とロード表示
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 処理中...';
+            
+            try {
+                // パスワードの一致確認
+                if (password !== confirmPassword) {
+                    throw new Error('パスワードが一致しません');
+                }
+                
+                // パスワードの強度確認
+                const strengthResult = checkPasswordStrength(password);
+                if (!strengthResult.valid) {
+                    throw new Error('パスワードの要件を満たしていません');
+                }
+                
+                // ストレージからメールアドレスを取得
+                const email = sessionStorage.getItem('auth_email');
+                if (!email) {
+                    throw new Error('セッションが無効です。最初からやり直してください');
+                }
+                
+                // ユーザー登録処理
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // セッションストレージをクリア
+                sessionStorage.removeItem('auth_email');
+                sessionStorage.removeItem('auth_code');
+                
+                // 完了ステップを表示
+                showStep('step-complete');
+                
+            } catch (error) {
+                console.error('エラー:', error);
+                updateStatus(error.message || 'アカウント作成中にエラーが発生しました', true);
+            } finally {
+                // ボタンを元に戻す
+                submitButton.disabled = false;
+                submitButton.textContent = 'アカウント作成を完了';
+            }
+        });
+    </script>
+
+    <style>
+    /* スタイルを追加 */
+    .auth-links {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .link-separator {
+        margin: 0 0.5rem;
+        color: var(--border-color);
+    }
+
+    /* 追加スタイル */
+    .auth-note {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        color: #666;
+    }
+    </style>
+</body>
+</html> 

@@ -1,0 +1,18 @@
+# 静的ファイルへは直接アクセス - ワイルドカードを使わない単純な設定に
+/style.css    /style.css    200
+/config.js    /config.js    200
+/js/*    /js/:splat    200
+/css/*    /css/:splat    200
+/images/*    /images/:splat    200
+
+# APIリクエスト
+/api/*  https://tvdckgrexwhqrzszynjh.supabase.co/:splat  200
+
+# HTMLファイルへの直接アクセス
+/login.html    /login.html    200
+/signup.html    /signup.html    200
+/dashboard.html    /dashboard.html    200
+/index.html    /index.html    200
+
+# すべてのリクエストはindex.htmlにフォールバック
+/*    /index.html    200 
