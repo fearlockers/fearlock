@@ -3431,4 +3431,168 @@ img {
         gap: 8px;
         text-align: left;
     }
-} 
+}
+
+/* 最新検出結果セクション - 新しいユニーククラス名 */
+.fearlock-vuln-detections {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.fearlock-detection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.fearlock-detection-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.fearlock-detection-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+}
+
+.fearlock-detections-listing {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fearlock-vuln-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.fearlock-vuln-item:last-child {
+    border-bottom: none;
+}
+
+.fearlock-vuln-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.fearlock-vuln-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+}
+
+.fearlock-vuln-info p {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+}
+
+.fearlock-status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.fearlock-status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.fearlock-status-complete {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.fearlock-vuln-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.fearlock-vuln-severity {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.fearlock-severity-critical {
+    color: #dc2626;
+}
+
+.fearlock-severity-high {
+    color: #ea580c;
+}
+
+.fearlock-severity-medium {
+    color: #2563eb;
+}
+
+.fearlock-severity-low {
+    color: #7c3aed;
+}
+
+.fearlock-vuln-action {
+    color: #64748b;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.fearlock-vuln-action:hover {
+    color: #3b82f6;
+}
+
+/* ページネーション - 新しいユニーククラス名 */
+.fearlock-vuln-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.fearlock-pagination-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.fearlock-pagination-active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.fearlock-pagination-btn:hover:not(.fearlock-pagination-active) {
+    background: #f8fafc;
+}
+
+// ... existing code ... 
