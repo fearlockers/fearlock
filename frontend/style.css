@@ -3052,40 +3052,20 @@ img {
 }
 
 /* 最新検出結果セクション */
-.latest-detections {
+.latest-detections-analysis {
     background: white;
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.analysis-section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.analysis-section-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0;
-}
-
-.analysis-section-subtitle {
-    font-size: 12px;
-    color: #64748b;
-    margin: 0;
-}
-
-.detections-list {
+.detections-list-analysis {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.detection-item {
+.detection-item-analysis {
     display: grid;
     grid-template-columns: 40px 1fr auto auto auto auto;
     gap: 16px;
@@ -3094,11 +3074,11 @@ img {
     border-bottom: 1px solid #f1f5f9;
 }
 
-.detection-item:last-child {
+.detection-item-analysis:last-child {
     border-bottom: none;
 }
 
-.detection-avatar {
+.detection-avatar-analysis {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -3111,37 +3091,20 @@ img {
     color: #64748b;
 }
 
-.detection-info h4 {
+.detection-info-analysis h4 {
     font-size: 14px;
     font-weight: 600;
     color: #1e293b;
     margin: 0 0 4px 0;
 }
 
-.detection-info p {
+.detection-info-analysis p {
     font-size: 12px;
     color: #64748b;
     margin: 0;
 }
 
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.status-pending {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.status-complete {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.detection-file {
+.detection-file-analysis {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -3149,450 +3112,25 @@ img {
     color: #64748b;
 }
 
-.detection-severity {
+.detection-severity-analysis {
     font-size: 14px;
     font-weight: 600;
 }
 
-.severity-critical {
-    color: #dc2626;
-}
-
-.severity-high {
-    color: #ea580c;
-}
-
-.severity-medium {
-    color: #2563eb;
-}
-
-.severity-low {
-    color: #7c3aed;
-}
-
-.detection-action {
+.detection-action-analysis {
     color: #64748b;
     cursor: pointer;
     font-size: 12px;
 }
 
-.detection-action:hover {
+.detection-action-analysis:hover {
     color: #3b82f6;
 }
 
-/* ページネーション */
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.pagination-btn {
-    width: 32px;
-    height: 32px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    background: white;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.pagination-btn.active {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-}
-
-.pagination-btn:hover:not(.active) {
-    background: #f8fafc;
-}
-
-/* アナリティクスセクション */
-.analysis-analytics-section {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.analytics-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.analytics-badge {
-    background: #f97316;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.year-selector {
-    color: #64748b;
-    font-size: 14px;
-    margin-left: auto;
-}
-
-.analysis-chart-container {
-    height: 200px;
-    position: relative;
-}
-
-/* データビューセクション */
-.data-view {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.data-view-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.data-view-title {
-    background: #5b21b6;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.data-view-menu {
-    color: #64748b;
-    cursor: pointer;
-}
-
-.data-view-subtitle {
-    color: #64748b;
-    font-size: 12px;
-    margin-bottom: 24px;
-}
-
-.donut-chart-container {
-    position: relative;
-    height: 200px;
-    margin-bottom: 24px;
-}
-
-.analysis-chart-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.analysis-legend-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.analysis-legend-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.analysis-legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
-.analysis-legend-color.fixed {
-    background: #10b981;
-}
-
-.analysis-legend-color.pending {
-    background: #ef4444;
-}
-
-.analysis-legend-label {
-    font-size: 12px;
-    color: #64748b;
-}
-
-.analysis-legend-percentage {
-    font-size: 12px;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.analysis-legend-change {
-    font-size: 10px;
-    color: #10b981;
-}
-
-/* レポートドキュメントセクション */
-.report-document {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.report-controls {
-    display: flex;
-    gap: 8px;
-}
-
-.control-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
-.control-dot.orange {
-    background: #f97316;
-}
-
-.control-dot.purple {
-    background: #8b5cf6;
-}
-
-.control-dot.blue {
-    background: #3b82f6;
-}
-
-.report-chart-container {
-    height: 180px;
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.action-btn {
-    background: #5b21b6;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
-}
-
-.action-btn:hover {
-    background: #4c1d95;
-}
-
-/* 分析画面レスポンシブデザイン */
-@media (max-width: 1200px) {
-    .analysis-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .analysis-main-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .analysis-right-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-    }
-}
-
 @media (max-width: 768px) {
-    .analysis-stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .analysis-right-column {
-        grid-template-columns: 1fr;
-    }
-    
-    .detection-item {
+    .detection-item-analysis {
         grid-template-columns: 1fr;
         gap: 8px;
         text-align: left;
     }
-}
-
-/* 最新検出結果セクション - 新しいユニーククラス名 */
-.fearlock-vuln-detections {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.fearlock-detection-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.fearlock-detection-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0;
-}
-
-.fearlock-detection-subtitle {
-    font-size: 12px;
-    color: #64748b;
-    margin: 0;
-}
-
-.fearlock-detections-listing {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.fearlock-vuln-item {
-    display: grid;
-    grid-template-columns: 40px 1fr auto auto auto auto;
-    gap: 16px;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.fearlock-vuln-item:last-child {
-    border-bottom: none;
-}
-
-.fearlock-vuln-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
-}
-
-.fearlock-vuln-info h4 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 0 0 4px 0;
-}
-
-.fearlock-vuln-info p {
-    font-size: 12px;
-    color: #64748b;
-    margin: 0;
-}
-
-.fearlock-status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.fearlock-status-pending {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.fearlock-status-complete {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.fearlock-vuln-file {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #64748b;
-}
-
-.fearlock-vuln-severity {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.fearlock-severity-critical {
-    color: #dc2626;
-}
-
-.fearlock-severity-high {
-    color: #ea580c;
-}
-
-.fearlock-severity-medium {
-    color: #2563eb;
-}
-
-.fearlock-severity-low {
-    color: #7c3aed;
-}
-
-.fearlock-vuln-action {
-    color: #64748b;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.fearlock-vuln-action:hover {
-    color: #3b82f6;
-}
-
-/* ページネーション - 新しいユニーククラス名 */
-.fearlock-vuln-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.fearlock-pagination-btn {
-    width: 32px;
-    height: 32px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    background: white;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.fearlock-pagination-active {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-}
-
-.fearlock-pagination-btn:hover:not(.fearlock-pagination-active) {
-    background: #f8fafc;
-}
-
-// ... existing code ... 
+} 
