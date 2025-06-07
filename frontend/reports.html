@@ -512,6 +512,84 @@
         </div>
     </div>
 
+    <!-- プロフィールモーダル -->
+    <div class="profile-modal">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h2>プロフィール</h2>
+                <button class="profile-close-btn" onclick="closeProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="profile-modal-body">
+                <!-- プロフィール画像セクション -->
+                <div class="profile-section">
+                    <div class="profile-image-container">
+                        <img src="https://via.placeholder.com/150x150/4B45A9/FFFFFF?text=U" alt="プロフィール画像" class="profile-image">
+                        <button class="profile-image-edit-btn">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 基本情報セクション -->
+                <div class="profile-section">
+                    <h3>基本情報</h3>
+                    <div class="profile-form-group">
+                        <label>表示名</label>
+                        <input type="text" class="profile-input" id="displayName" placeholder="表示名を入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>メールアドレス</label>
+                        <input type="email" class="profile-input" id="profileEmail" placeholder="メールアドレスを入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>所属組織</label>
+                        <input type="text" class="profile-input" id="organization" placeholder="所属組織を入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>役職</label>
+                        <input type="text" class="profile-input" id="jobTitle" placeholder="役職を入力">
+                    </div>
+                </div>
+
+                <!-- 連絡先セクション -->
+                <div class="profile-section">
+                    <h3>連絡先</h3>
+                    <div class="profile-form-group">
+                        <label>電話番号</label>
+                        <input type="tel" class="profile-input" id="phoneNumber" placeholder="電話番号を入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>Slack</label>
+                        <input type="text" class="profile-input" id="slackUsername" placeholder="Slackユーザー名を入力">
+                    </div>
+                </div>
+
+                <!-- 通知設定セクション -->
+                <div class="profile-section">
+                    <h3>通知設定</h3>
+                    <div class="profile-form-group">
+                        <label class="profile-checkbox">
+                            <input type="checkbox" checked>
+                            <span>メールで通知を受け取る</span>
+                        </label>
+                        <label class="profile-checkbox">
+                            <input type="checkbox" checked>
+                            <span>Slackで通知を受け取る</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-modal-footer">
+                <button class="profile-cancel-btn" onclick="closeProfileModal()">キャンセル</button>
+                <button class="profile-save-btn" onclick="saveProfile()">保存</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Supabaseの設定
         const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
@@ -813,6 +891,29 @@
                 alert(`レポートタイプを${type}に変更しました`);
             });
         });
+
+        // プロフィールモーダルを開く
+        function openProfileModal() {
+            document.querySelector('.profile-modal').classList.add('show');
+        }
+
+        // プロフィールモーダルを閉じる
+        function closeProfileModal() {
+            document.querySelector('.profile-modal').classList.remove('show');
+        }
+
+        // プロフィールを保存
+        function saveProfile() {
+            // プロフィール保存のロジックをここに実装
+            alert('プロフィールが保存されました');
+            closeProfileModal();
+        }
+
+        // ユーザーメニューのプロフィールリンクにクリックイベントを追加
+        document.querySelector('a[href="#"].dropdown-item').onclick = function(e) {
+            e.preventDefault();
+            openProfileModal();
+        };
     </script>
 </body>
 </html> 
