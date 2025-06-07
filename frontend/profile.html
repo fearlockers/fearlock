@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プロフィール - FEARLOCK</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+</head>
+<body class="camuquotes-body">
+    <!-- トップヘッダー -->
+    <header class="top-header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo-section">
+                    <button class="bento-menu-btn" onclick="toggleBentoMenu()">
+                        <div class="bento-grid">
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                            <div class="bento-dot"></div>
+                        </div>
+                    </button>
+                    <span class="logo-text">FEARLOCK</span>
+                </div>
+            </div>
+            
+            <nav class="top-nav">
+                <a href="dashboard.html" class="nav-item">ダッシュボード</a>
+                <a href="projects.html" class="nav-item">プロジェクト</a>
+                <a href="vulnerability-scan.html" class="nav-item">脆弱性スキャン</a>
+                <a href="analysis.html" class="nav-item">分析</a>
+                <a href="reports.html" class="nav-item">レポート</a>
+            </nav>
+            
+            <div class="header-right">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button class="help-btn">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <button class="settings-btn" onclick="openSettingsModal()">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="user-menu">
+                    <button class="user-avatar" onclick="toggleUserMenu()">
+                        <img src="https://via.placeholder.com/32x32/4B45A9/FFFFFF?text=U" alt="User Avatar">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-info">
+                            <div class="user-name" id="user-name">ユーザー</div>
+                            <div class="user-email" id="user-email">user@example.com</div>
+                        </div>
+                        <hr class="dropdown-divider">
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            プロフィール
+                        </a>
+                        <a href="#" class="dropdown-item" onclick="openSettingsModal()">
+                            <i class="fas fa-cog"></i>
+                            設定
+                        </a>
+                        <hr class="dropdown-divider">
+                        <button class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            ログアウト
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ベントメニュードロップダウン -->
+        <div class="bento-dropdown" id="bentoDropdown">
+            <div class="bento-dropdown-content">
+                <div class="bento-apps-grid">
+                    <a href="dashboard.html" class="bento-app-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="projects.html" class="bento-app-item">
+                        <i class="fas fa-folder"></i>
+                        <span>プロジェクト</span>
+                    </a>
+                    <a href="vulnerability-scan.html" class="bento-app-item">
+                        <i class="fas fa-search"></i>
+                        <span>脆弱性スキャン</span>
+                    </a>
+                    <a href="analysis.html" class="bento-app-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>分析</span>
+                    </a>
+                    <a href="reports.html" class="bento-app-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>レポート</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- ページヘッダー -->
+            <div class="page-header">
+                <h1>プロフィール</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="saveProfile()">
+                        <i class="fas fa-save"></i>
+                        保存
+                    </button>
+                </div>
+            </div>
+
+            <!-- プロフィールコンテンツ -->
+            <div class="profile-content">
+                <!-- プロフィール画像セクション -->
+                <div class="profile-section profile-image-section">
+                    <div class="profile-image-container">
+                        <img src="https://via.placeholder.com/150x150/4B45A9/FFFFFF?text=U" alt="プロフィール画像" class="profile-image">
+                        <button class="profile-image-edit-btn">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 基本情報セクション -->
+                <div class="profile-section">
+                    <h2>基本情報</h2>
+                    <div class="profile-form-group">
+                        <label>表示名</label>
+                        <input type="text" class="profile-input" id="displayName" placeholder="表示名を入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>メールアドレス</label>
+                        <input type="email" class="profile-input" id="profileEmail" placeholder="メールアドレスを入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>所属組織</label>
+                        <input type="text" class="profile-input" id="organization" placeholder="所属組織を入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>役職</label>
+                        <input type="text" class="profile-input" id="jobTitle" placeholder="役職を入力">
+                    </div>
+                </div>
+
+                <!-- 連絡先セクション -->
+                <div class="profile-section">
+                    <h2>連絡先</h2>
+                    <div class="profile-form-group">
+                        <label>電話番号</label>
+                        <input type="tel" class="profile-input" id="phoneNumber" placeholder="電話番号を入力">
+                    </div>
+                    <div class="profile-form-group">
+                        <label>Slack</label>
+                        <input type="text" class="profile-input" id="slackUsername" placeholder="Slackユーザー名を入力">
+                    </div>
+                </div>
+
+                <!-- 通知設定セクション -->
+                <div class="profile-section">
+                    <h2>通知設定</h2>
+                    <div class="profile-form-group">
+                        <label class="profile-checkbox">
+                            <input type="checkbox" checked>
+                            <span>メールで通知を受け取る</span>
+                        </label>
+                        <label class="profile-checkbox">
+                            <input type="checkbox" checked>
+                            <span>Slackで通知を受け取る</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Supabaseの設定
+        const supabaseUrl = 'https://tvdckgrexwhqrzszynjh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2ZGNrZ3JleHdocXJ6c3p5bmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUzMTQzNTIsImV4cCI6MjA2MDg5MDM1Mn0.ZZTp66LPji6NOXfI9X7ece1gm2RN6f9vwFHVw3rqb2I';
+        
+        // Cookie関連のヘルパー関数
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/; SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                }
+            }
+            return null;
+        }
+
+        function removeCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax';
+        }
+        
+        // Supabaseクライアントの初期化
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: false,
+                storageKey: 'sb-session-cookie',
+                storage: {
+                    getItem: (key) => getCookie(key),
+                    setItem: (key, value) => setCookie(key, value, 7),
+                    removeItem: (key) => removeCookie(key)
+                }
+            }
+        });
+
+        // ユーザーメニューの表示/非表示を切り替え
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        // ベントメニューの表示/非表示を切り替え
+        function toggleBentoMenu() {
+            document.getElementById('bentoDropdown').classList.toggle('show');
+        }
+
+        // プロフィールを保存
+        function saveProfile() {
+            // プロフィール保存のロジックをここに実装
+            alert('プロフィールが保存されました');
+        }
+
+        // ログアウト処理
+        async function logout() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('ログアウトエラー:', error.message);
+                alert('ログアウトに失敗しました');
+            }
+        }
+
+        // クリック時のイベントリスナー
+        document.addEventListener('click', function(event) {
+            const userDropdown = document.getElementById('userDropdown');
+            const bentoDropdown = document.getElementById('bentoDropdown');
+            const userMenu = document.querySelector('.user-menu');
+            const bentoMenu = document.querySelector('.bento-menu-btn');
+
+            // ユーザーメニューの外側をクリックした場合
+            if (!userMenu.contains(event.target) && userDropdown.classList.contains('show')) {
+                userDropdown.classList.remove('show');
+            }
+
+            // ベントメニューの外側をクリックした場合
+            if (!bentoMenu.contains(event.target) && bentoDropdown.classList.contains('show')) {
+                bentoDropdown.classList.remove('show');
+            }
+        });
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // ユーザー情報の読み込みなど
+        });
+    </script>
+</body>
+</html> 
